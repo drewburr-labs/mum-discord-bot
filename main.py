@@ -75,7 +75,8 @@ async def on_ready():
 @BOT.event
 async def on_voice_state_update(member, before, after):
     """
-    Handler for automatically managing lobbies
+    Handler for automatically managing lobbies.
+    Should not be modifying anything under the General category.
 
     Create a new lobby when user joins seed_channel.
     New channel will use the same configuration from seed_channel.
@@ -87,20 +88,21 @@ async def on_voice_state_update(member, before, after):
     if before.channel is not after.channel:
 
         guild = member.guild
-        seed_channel = utils.get(guild.voice_channels,
-                                 name='Create New Lobby')
+        general_category = utils.get(guild.categories, name='General')
+        seed_channel = utils.get(guild.voice_channels, name='Create New Lobby')
 
-        # If user is in the seed channel, create new lobby and move user
-        if member.voice is not None:
-            if member.voice.channel is seed_channel:
-                # User has joined the seed channel
+        # If user joined a channel
+        if after.channel is not None:
+            if after.channel is seed_channel:
+                # User has joined the seed channel. Create a new lobby.
                 await initialize_lobby(guild, seed_channel, member)
-            else:
+
+            elif after.channel.category is not general_category:
                 # User is joining an existing lobby
-                await initialize_lobby_member(member, member.voice.channel.category)
+                await initialize_lobby_member(member, after.channel.category)
 
         # If user left a lobby
-        if before.channel is not None and before.channel is not seed_channel:
+        if before.channel is not None and before.channel.category is not general_category:
             # Clear member's roles from last lobby
             await clear_member_lobby_overwrites(member, before.channel.category)
 
