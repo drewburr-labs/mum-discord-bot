@@ -128,7 +128,14 @@ async def initialize_lobby_admin(member, category):
     Assumes the current lobby exists, and the member is still present in the lobby.
     """
 
-    await category.set_permissions(member, manage_channels=True, mute_members=True)
+    channels = category.channels
+
+    overwrite = discord.PermissionOverwrite(
+        manage_channels=True, mute_members=True)
+
+    # Remove all channel permission overwrites
+    for channel in channels:
+        await channel.set_permissions(member, overwrite=overwrite)
 
 
 async def initialize_lobby_text_channel(category):
