@@ -131,12 +131,12 @@ async def initialize_lobby_admin(member):
 
 async def initialize_lobby(guild, seed_channel, member):
     """
-    Creates a lobby named after the member.
+    Creates a lobby (cattegory) named after the member.
 
     Adds a text and voice channel to the category.
     Creates a role to grant access to the text channel.
 
-    # The creating member will be granted access to manage the channels in this category.
+    The creating member will be granted access to manage the channels in this category.
     """
 
     # Generate a voice channel name, based on the username
@@ -145,9 +145,10 @@ async def initialize_lobby(guild, seed_channel, member):
 
     category = await guild.create_category(category_name)
 
-    # Grant user admin access to the lobby
+    # Grant user "admin" access to the lobby
     await initialize_lobby_admin(member)
 
+    # Create voice channel
     voice_channel_name = "voice chat"
     voice_channel_params = {
         "bitrate": seed_channel.bitrate,
@@ -163,15 +164,13 @@ async def initialize_lobby(guild, seed_channel, member):
     # Make text chat invisible by default
     await text_channel.set_permissions(guild.default_role, read_messages=False)
     # Allow user to see text chat
+    # TODO: Is this necessary? The user has admin access to the category
     await text_channel.set_permissions(member, read_messages=True)
 
-    # Moving the user triggers 'on_voice_state_update' again
+    # Move the user to the lobby. Triggers 'on_voice_state_update'
     logger.info(
         f'Moving {member.name} to channel: {voice_channel.name}')
     await member.edit(voice_channel=voice_channel)
-
-    # # Apply category permissions
-    # await text_channel.set_permissions(text_role, manage_channels=True)
 
 
 async def delete_empty_lobby(category):
