@@ -75,13 +75,12 @@ async def on_ready():
 @BOT.event
 async def on_voice_state_update(member, before, after):
     """
-    Handler for automatically creating and deleting voice channels
+    Handler for automatically managing lobbies
 
-    Create a new voice channel when user joins seed_channel and
-    move user to new voice channel.
+    Create a new lobby when user joins seed_channel.
     New channel will use the same configuration from seed_channel.
 
-    Delete any empty channels.
+    Delete any empty lobbies.
     """
 
     # Don't do anything if user's channel didn't update
