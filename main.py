@@ -215,7 +215,7 @@ async def send_lobby_welcome_message(text_channel):
             },
             {
                 "name": f"The `{prefix}code` command",
-                "value": f"Use the `{prefix}code` command to rename your text channel after your game code.",
+                "value": f"Use the `{prefix}code` command to rename your text channel after your game code. This command also has the alias `{prefix}c`.",
             },
             # {
             #     "name": "Field2",
@@ -314,6 +314,22 @@ async def clear_member_lobby_overwrites(member, category):
 
     # Remove the lobby permission overwrites
     await category.set_permissions(member, overwrite=overwrite)
+
+
+@BOT.command(name="code", aliases=["c"])
+async def code(ctx, args):
+    """
+    Used to set a text-channel's name to the name of a game code.
+
+    Codes should be all alpha charactrers, and 6 characters long.
+
+    This should only work in a lobby.
+    """
+
+    # TODO: This does not publish an error message when code criteria isn't met
+
+    if is_lobby(ctx.channel.category) and args.isalpha() and len(args) == 6:
+        await ctx.channel.edit(name=args)
 
 
 @BOT.event
