@@ -147,11 +147,14 @@ async def initialize_lobby_admin(member, category):
 
     channels = category.channels
 
-    overwrite = discord.PermissionOverwrite(
+    discord.PermissionOverwrite(
         manage_channels=True, mute_members=True)
 
-    # Remove all channel permission overwrites
+    # Update user's permission overwrites
     for channel in channels:
+        overwrite = channel.overwrites_for(member)
+        overwrite.update(manage_channels=True, mute_members=True)
+
         await channel.set_permissions(member, overwrite=overwrite)
 
 
