@@ -97,7 +97,7 @@ async def on_voice_state_update(member, before, after):
                 await initialize_lobby(guild, seed_channel, member)
             else:
                 # User is joining an existing lobby
-                await initialize_lobby_member(member)
+                await initialize_lobby_member(member, member.voice.channel.category)
 
         # If user left a lobby
         if before.channel is not None and before.channel is not seed_channel:
@@ -109,20 +109,18 @@ async def on_voice_state_update(member, before, after):
                 await delete_empty_lobby(before.channel.category)
 
 
-async def initialize_lobby_member(member):
+async def initialize_lobby_member(member, category):
     """
     Grants a user access to the currently joined lobby.
     Assumes the current lobby exists, and the member is still present in the lobby.
     """
-
-    category = member.voice.channel.category
 
     # Grant read access to text channels
     for text_channel in category.text_channels:
         await text_channel.set_permissions(member, read_messages=True)
 
 
-async def initialize_lobby_admin(member):
+async def initialize_lobby_admin(member, category):
     category = member.voice.channel.category
 
     await category.set_permissions(member, manage_channels=True, mute_members=True)
@@ -189,10 +187,10 @@ async def initialize_lobby(guild, seed_channel, member):
     await initialize_lobby_text_channel(category)
 
     # Grant user default access to the lobby
-    await initialize_lobby_member(member)
+    await initialize_lobby_member(member, category)
 
     # Grant user "admin" access to the lobby
-    await initialize_lobby_admin(member)
+    await initialize_lobby_admin(member, category)
 
     # Move the user to the lobby. Triggers 'on_voice_state_update'
     logger.info(
