@@ -88,7 +88,6 @@ async def on_voice_state_update(member, before, after):
     if before.channel is not after.channel:
 
         guild = member.guild
-        general_category = utils.get(guild.categories, name='General')
         seed_channel = utils.get(guild.voice_channels, name='Create New Lobby')
 
         # If user joined a channel
@@ -97,18 +96,29 @@ async def on_voice_state_update(member, before, after):
                 # User has joined the seed channel. Create a new lobby.
                 await initialize_lobby(guild, seed_channel, member)
 
-            elif after.channel.category is not general_category:
+            elif is_lobby(after.channel.category):
                 # User is joining an existing lobby
                 await initialize_lobby_member(member, after.channel.category)
 
         # If user left a lobby
-        if before.channel is not None and before.channel.category is not general_category:
+        if before.channel is not None and is_lobby(before.channel.category):
             # Clear member's roles from last lobby
             await clear_member_lobby_overwrites(member, before.channel.category)
 
             # If the last lobby is empty, delete it
             if not before.channel.members:
                 await delete_lobby(before.channel.category)
+
+
+def is_lobby(category):
+    """
+    Returns True (bool) if a category is a lobby.
+    """
+
+    if category.name.endswith("Lobby"):
+        return True
+    else:
+        return False
 
 
 async def initialize_lobby_member(member, category):
