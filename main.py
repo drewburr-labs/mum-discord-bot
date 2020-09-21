@@ -153,6 +153,8 @@ async def initialize_lobby_text_channel(category):
     # Setup text channel
     text_channel = await category.create_text_channel(text_channel_name, overwrites=overwrites)
 
+    await send_lobby_welcome_message(text_channel)
+
     return text_channel
 
 
@@ -172,6 +174,45 @@ async def initialize_lobby_voice_channel(category, seed_channel):
     voice_channel = await category.create_voice_channel(voice_channel_name, **voice_channel_params)
 
     return voice_channel
+
+
+# @BOT.command(name="test")
+async def send_lobby_welcome_message(text_channel):
+
+    # text_channel = utils.get(ctx.guild.text_channels, name='general')
+    prefix = BOT.command_prefix
+
+    # https://discordpy.readthedocs.io/en/latest/api.html#embed
+    embed_data = {
+        "title": "Welcome to the lobby!",
+        "description": "Here's some tips to get you started",
+        "fields":
+        [
+            {
+                "name": "Managing your lobby",
+                "value": f"By default, the creator of the lobby has the ability to manage channels, mute members, etc. To grant these privileges to another lobby member, use the `{prefix}promote` command.",
+            },
+            {
+                "name": "Lobby text channels are private",
+                "value": "Only those in the lobby's voice chat can see the text channel. You'll want to share game codes here.",
+            },
+            {
+                "name": f"The `{prefix}code` command",
+                "value": f"Use the `{prefix}code` command to rename your text channel after your game code.",
+            },
+            # {
+            #     "name": "Field2",
+            #     "value": "This is a message?",
+            # },
+        ]
+    }
+
+    embed = discord.Embed.from_dict(embed_data)
+
+    # for field in fields:
+    #     embed.add_field(**field)
+
+    await text_channel.send(embed=embed)
 
 
 async def initialize_lobby(guild, seed_channel, member):
