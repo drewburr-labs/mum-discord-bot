@@ -346,7 +346,11 @@ async def on_command_error(ctx, error):
     if isinstance(error, commands.errors.CheckFailure):
         logger.info(
             f'{ctx.author} attempted to run command: {ctx.message.content}')
-        await ctx.send('You do not have the correct role for this command.')
+        if ctx_is_lobby(ctx):
+            await ctx.send('You do not have access to run this command.')
+        else:
+            # Delete messges failures that come from outside a lobby
+            await ctx.message.delete()
     else:
         logger.error(
             f'Unknown error. Invocation: {ctx.message.content}. \nError: {error}')
