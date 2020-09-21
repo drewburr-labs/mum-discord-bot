@@ -174,6 +174,11 @@ async def initialize_lobby(guild, seed_channel, member):
 
 
 async def delete_empty_lobby(category):
+    """
+    Handles the deletion of an existing lobby.
+
+    Assumes lobby still exists.
+    """
 
     channels = category.channels
     category_roles = list()
@@ -202,6 +207,8 @@ async def delete_empty_lobby(category):
 async def clear_member_lobby_overwrites(member, category):
     """
     Clears a user's permission overwrites from a lobby.
+
+    Permssion overwrites are those that differ from the category.
     """
 
     channels = category.channels
