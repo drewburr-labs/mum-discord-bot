@@ -121,7 +121,10 @@ async def initialize_lobby_member(member, category):
 
 
 async def initialize_lobby_admin(member, category):
-    category = member.voice.channel.category
+    """
+    Grants a user 'admin' control over the current lobby.
+    Assumes the current lobby exists, and the member is still present in the lobby.
+    """
 
     await category.set_permissions(member, manage_channels=True, mute_members=True)
 
