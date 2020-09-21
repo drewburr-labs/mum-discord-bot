@@ -108,7 +108,7 @@ async def on_voice_state_update(member, before, after):
 
             # If the last lobby is empty, delete it
             if not before.channel.members:
-                await delete_empty_lobby(before.channel.category)
+                await delete_lobby(before.channel.category)
 
 
 async def initialize_lobby_member(member, category):
@@ -208,7 +208,7 @@ async def initialize_lobby(guild, seed_channel, member):
     await member.edit(voice_channel=voice_channel)
 
 
-async def delete_empty_lobby(category):
+async def delete_lobby(category):
     """
     Handles the deletion of an existing lobby.
 
