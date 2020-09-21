@@ -121,6 +121,13 @@ def is_lobby(category):
         return False
 
 
+def ctx_is_lobby(ctx):
+    """
+    Checks if a message was sent from a lobby's text channel.
+    """
+    return is_lobby(ctx.channel.category)
+
+
 async def initialize_lobby_member(member, category):
     """
     Grants a user access to the currently joined lobby.
@@ -317,6 +324,7 @@ async def clear_member_lobby_overwrites(member, category):
 
 
 @BOT.command(name="code", aliases=["c"])
+@commands.check(ctx_is_lobby)
 async def code(ctx, args):
     """
     Used to set a text-channel's name to the name of a game code.
