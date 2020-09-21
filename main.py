@@ -343,6 +343,22 @@ async def code(ctx, args):
         await ctx.channel.edit(name=args)
 
 
+@BOT.command(name="promote")
+@commands.has_permissions(manage_channels=True)
+@commands.check(ctx_is_lobby)
+async def promote(ctx, user: discord.User):
+    """
+    Grants a user 'admin' access to a lobby. You must be a current lobby admin to use this command.
+    """
+
+    # TODO: This does not publish an error message when the user is not a lobby admin
+    # TODO: This does not yet provide a confirmation message
+
+    if is_lobby(ctx.channel.category):
+        await initialize_lobby_admin(user, ctx.channel.category)
+        # await ctx.channel.edit(name=args)
+
+
 @BOT.event
 async def on_command_error(ctx, error):
     """Core error handler"""
