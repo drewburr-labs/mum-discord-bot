@@ -129,6 +129,44 @@ async def initialize_lobby_admin(member):
     await category.set_permissions(member, manage_channels=True, mute_members=True)
 
 
+async def initialize_lobby_text_channel(category):
+    """
+    Creates the text channel for a particular lobby.
+
+    Text channel is hidden from users with the default role.
+
+    Retuns the created text channel.
+    """
+    guild = category.guild
+    text_channel_name = "text-chat"
+
+    # Setup text channel
+    text_channel = await category.create_text_channel(text_channel_name)
+
+    # Make text chat invisible by default
+    await text_channel.set_permissions(guild.default_role, read_messages=False)
+
+    return text_channel
+
+
+async def initialize_lobby_voice_channel(category, seed_channel):
+    """
+    Creates the voice channel for a particular lobby.
+
+    Retuns the created voice channel.
+    """
+    voice_channel_name = "voice chat"
+
+    voice_channel_params = {
+        "bitrate": seed_channel.bitrate,
+        "user_limit": 10,
+    }
+
+    voice_channel = await category.create_voice_channel(voice_channel_name, **voice_channel_params)
+
+    return voice_channel
+
+
 async def initialize_lobby(guild, seed_channel, member):
     """
     Creates a lobby (category) named after the member.
@@ -145,27 +183,17 @@ async def initialize_lobby(guild, seed_channel, member):
 
     category = await guild.create_category(category_name)
 
+    # Create the lobby voice channel
+    voice_channel = await initialize_lobby_voice_channel(category, seed_channel)
+
+    # Create voice channel and setup permissions
+    await initialize_lobby_text_channel(category)
+
+    # Grant user default access to the lobby
+    await initialize_lobby_member(member)
+
     # Grant user "admin" access to the lobby
     await initialize_lobby_admin(member)
-
-    # Create voice channel
-    voice_channel_name = "voice chat"
-    voice_channel_params = {
-        "bitrate": seed_channel.bitrate,
-        "user_limit": 10,
-    }
-
-    voice_channel = await category.create_voice_channel(voice_channel_name, **voice_channel_params)
-
-    # Setup text channel and role
-    text_channel_name = "text chat"
-    text_channel = await category.create_text_channel(text_channel_name)
-
-    # Make text chat invisible by default
-    await text_channel.set_permissions(guild.default_role, read_messages=False)
-    # Allow user to see text chat
-    # TODO: Is this necessary? The user has admin access to the category
-    await text_channel.set_permissions(member, read_messages=True)
 
     # Move the user to the lobby. Triggers 'on_voice_state_update'
     logger.info(
