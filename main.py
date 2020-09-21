@@ -137,11 +137,16 @@ async def initialize_lobby_text_channel(category):
     guild = category.guild
     text_channel_name = "text-chat"
 
-    # Setup text channel
-    text_channel = await category.create_text_channel(text_channel_name)
+    # Setup overwrites
+    default_overwrite = discord.PermissionOverwrite(read_messages=False)
 
-    # Make text chat invisible by default
-    await text_channel.set_permissions(guild.default_role, read_messages=False)
+    overwrites = {
+        # Text channels are invisible by default
+        guild.default_role: default_overwrite
+    }
+
+    # Setup text channel
+    text_channel = await category.create_text_channel(text_channel_name, overwrites=overwrites)
 
     return text_channel
 
