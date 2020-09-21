@@ -131,7 +131,7 @@ async def initialize_lobby_admin(member):
 
 async def initialize_lobby(guild, seed_channel, member):
     """
-    Creates a lobby (cattegory) named after the member.
+    Creates a lobby (category) named after the member.
 
     Adds a text and voice channel to the category.
     Creates a role to grant access to the text channel.
