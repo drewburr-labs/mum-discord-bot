@@ -217,7 +217,7 @@ async def send_lobby_welcome_message(text_channel):
         [
             {
                 "name": "Managing your lobby",
-                "value": f"By default, the creator of the lobby has the ability to manage channels, mute members, etc. To grant these privileges to another lobby member, use the `{prefix}promote` command.",
+                "value": f"By default, the creator of the lobby has the ability to manage channels, mute members, etc. To grant these privileges to another lobby member, use the `{prefix}promote @user` command.",
             },
             {
                 "name": "Lobby text channels are private",
@@ -225,7 +225,7 @@ async def send_lobby_welcome_message(text_channel):
             },
             {
                 "name": f"The `{prefix}code` command",
-                "value": f"Use the `{prefix}code` command to rename your text channel after your game code. This command also has the alias `{prefix}c`.",
+                "value": f"Use the `{prefix}code ABCXYZ` command to rename your text channel after your game code. This command also has the alias `{prefix}c`.",
             },
             # {
             #     "name": "Field2",
