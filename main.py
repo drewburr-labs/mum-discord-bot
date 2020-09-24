@@ -236,9 +236,6 @@ async def send_lobby_welcome_message(text_channel):
 
     embed = discord.Embed.from_dict(embed_data)
 
-    # for field in fields:
-    #     embed.add_field(**field)
-
     await text_channel.send(embed=embed)
 
 
