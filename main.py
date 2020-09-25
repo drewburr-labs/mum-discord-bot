@@ -66,6 +66,20 @@ TOKEN = os.getenv('DISCORD_TOKEN')
 BOT = commands.Bot(command_prefix=os.getenv('PREFIX'))
 
 
+# Define custom exception
+class LocationError(discord.ext.commands.CommandError):
+    """
+    A command was run from a forbidden location.
+    Example: User executes a lobby-specific command in #general
+
+    Attributes:
+        message -- Error message to send to chat, as a reply.
+    """
+
+    def __init__(self, message):
+        self.message = message
+
+
 @BOT.event
 async def on_ready():
     """Produces log for when the bot is ready for action"""
@@ -124,8 +138,12 @@ def is_lobby(category):
 def ctx_is_lobby(ctx):
     """
     Checks if a message was sent from a lobby's text channel.
+    Raises LocationError if channel is not a lobby.
     """
-    return is_lobby(ctx.channel.category)
+    if is_lobby(ctx.channel.category):
+        return True
+    else:
+        raise LocationError('That command can only be used in a lobby.')
 
 
 async def initialize_lobby_member(member, category):
@@ -358,15 +376,21 @@ async def promote(ctx, user: discord.User):
 
 @BOT.event
 async def on_command_error(ctx, error):
-    """Core error handler"""
-    if isinstance(error, commands.errors.CheckFailure):
+    """
+    Core error handler
+    https://discordpy.readthedocs.io/en/latest/ext/commands/api.html?highlight=commands%20check#discord.ext.commands.check
+    https://discordpy.readthedocs.io/en/latest/ext/commands/api.html?highlight=commands%20errors#exceptions
+    """
+    if isinstance(error, commands.errors.MissingPermissions):
         logger.info(
             f'{ctx.author} attempted to run command: {ctx.message.content}')
         if ctx_is_lobby(ctx):
-            await ctx.send('You do not have access to run this command.')
+            await ctx.send(f'{ctx.author.mention} You do not have access to run this command.')
         else:
-            # Delete messges failures that come from outside a lobby
+            # Delete unauthorized commands that come from outside a lobby
             await ctx.message.delete()
+    elif isinstance(error, LocationError):
+        await ctx.send(f'{ctx.author.mention} {error.message}')
     else:
         logger.error(
             f'Unknown error. Invocation: {ctx.message.content}. \nError: {error}')
