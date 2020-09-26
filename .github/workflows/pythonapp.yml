@@ -37,7 +37,7 @@ jobs:
         run: sudo apt install openconnect
 
       - name: Connect to OpenConnect
-        run: echo '${{ secrets.SSH_PASS }}' | sudo openconnect vpn.drewburr.com --user=${{ secrets.SSH_USER }} --passwd-on-stdin --background --http-auth=BASIC
+        run: echo '${{ secrets.SSH_PASS }}' | sudo openconnect vpn.drewburr.com --user=${{ secrets.SSH_USER }} --passwd-on-stdin --background --http-auth=BASIC --servercert sha256:a704ba9fbd97e758d3dd39d848b75c0d1e6f479be1b8136147f8475d4040b884
 
       - name: Deploy project to remote host
         env:
