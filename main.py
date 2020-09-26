@@ -67,9 +67,9 @@ BOT = commands.Bot(command_prefix=os.getenv('PREFIX'))
 
 
 # Define custom exception
-class LocationError(discord.ext.commands.CommandError):
+class UserError(discord.ext.commands.CommandError):
     """
-    A command was run from a forbidden location.
+    A command was run incorrectly, and the user should be told why.
     Example: User executes a lobby-specific command in #general
 
     Attributes:
@@ -138,12 +138,12 @@ def is_lobby(category):
 def ctx_is_lobby(ctx):
     """
     Checks if a message was sent from a lobby's text channel.
-    Raises LocationError if channel is not a lobby.
+    Raises UserError if channel is not a lobby.
     """
     if is_lobby(ctx.channel.category):
         return True
     else:
-        raise LocationError('That command can only be used in a lobby.')
+        raise UserError('That command can only be used in a lobby.')
 
 
 async def initialize_lobby_member(member, category):
@@ -364,14 +364,12 @@ async def code(ctx, args):
 async def promote(ctx, user: discord.User):
     """
     Grants a user 'admin' access to a lobby. You must be a current lobby admin to use this command.
+
+    Throws 'UserNotFound' if user does not exist. (Implemented in 1.5)
     """
-
-    # TODO: This does not publish an error message when the user is not a lobby admin
-    # TODO: This does not yet provide a confirmation message
-
     if is_lobby(ctx.channel.category):
         await initialize_lobby_admin(user, ctx.channel.category)
-        # await ctx.channel.edit(name=args)
+        await ctx.send(f"{user.mention} has been promoted!")
 
 
 @BOT.event
@@ -389,8 +387,11 @@ async def on_command_error(ctx, error):
         else:
             # Delete unauthorized commands that come from outside a lobby
             await ctx.message.delete()
-    elif isinstance(error, LocationError):
+    elif isinstance(error, UserError):
         await ctx.send(f'{ctx.author.mention} {error.message}')
+    # Implemented in 1.5
+    # elif isinstance(error, commands.errors.UserNotFound):
+    #     await f'{ctx.author.mention} {error}'
     else:
         logger.error(
             f'Unknown error. Invocation: {ctx.message.content}. \nError: {error}')
