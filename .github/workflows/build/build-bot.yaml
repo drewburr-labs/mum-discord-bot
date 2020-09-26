@@ -1,0 +1,71 @@
+---
+- hosts: all
+  gather_facts: false
+
+  vars:
+    DISCORD_TOKEN: "{{ lookup('env','DISCORD_TOKEN') }}"
+    SSH_USER: "{{ lookup('env','SSH_USER') }}"
+    BOT_HOME: "/home/{{ SSH_USER }}/burrbot"
+    APP_DIR: "{{ BOT_HOME }}/app"
+    DATA_DIR: "{{ BOT_HOME }}/data"
+
+  tasks:
+    - name: Clone repo / update bot
+      git:
+        repo: git@github.com:drewburr/discord-among-us.git
+        dest: "{{ APP_DIR }}"
+        force: true
+
+    - name: Install package dependencies
+      apt:
+        name: "{{ item }}"
+      become: true
+      loop: "{{ lookup('file', package_path).splitlines() }}"
+
+    - name: Install pip dependencies
+      pip:
+        requirements: "{{ APP_DIR }}/requirements.txt"
+      register: pip_vars
+
+    - name: Create required directories
+      file:
+        path: "{{ item }}"
+        state: directory
+      loop:
+        - "{{ APP_DIR }}"
+        - "{{ DATA_DIR }}"
+
+    - name: Setup .env
+      copy:
+        dest: "{{ APP_DIR }}/.env"
+        force: true
+        content: |
+          DISCORD_TOKEN="{{ DISCORD_TOKEN }}"
+          PREFIX="!"
+
+    - name: Stop burrbot service
+      service:
+        name: burrbot
+        state: stopped
+        enabled: true # Ensure service starts at boot
+      become: true
+
+    - name: Update burrbot service
+      template:
+        src: files/burrbot.service.j2
+        dest: /etc/systemd/system/burrbot.service
+      become: true
+      register: service_update
+
+    - name: Reload systemctl daemon
+      command:
+        cmd: systemctl daemon-reload
+      become: true
+      when: service_update.changed
+
+    - name: Start burrbot service
+      service:
+        name: burrbot
+        state: started
+        enabled: true # Ensure service starts at boot
+      become: true

@@ -1,0 +1,53 @@
+---
+name: Python application
+
+on:
+  push:
+    branches:
+      - master
+
+jobs:
+  build:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v1
+
+      - uses: actions/setup-python@v2
+        with:
+          python-version: "^3.8.0" # https://devhints.io/semver
+
+      - name: Install workflow dependencies
+        run: |
+          python3 -m pip install --upgrade pip
+          pip install 'pylint<=2.4.4'
+
+      # - name: Install project dependencies
+      #   run: |
+      #     sudo apt-get install $(awk '{print $1}' package.list)
+      #     pip install -r requirements.txt
+
+      - name: Lint check with pylint
+        run: |
+          py_files=`find -name '*.py' -path './app/*'`
+          for file in $py_files; do
+            pylint "$file" --exit-zero
+          done
+
+      - name: Install OpenConnect
+        run: sudo apt install openconnect
+
+      - name: Connect to OpenConnect
+        run: echo '${{ secrets.SSH_PASS }}' | sudo openconnect vpn.drewburr.com --user=${{ secrets.SSH_USER }} --passwd-on-stdin --background --http-auth=BASIC
+
+      - name: Deploy project to remote host
+        env:
+          SSH_USER: ${{ secrets.SSH_USER }}
+          SSH_HOST: ${{ secrets.SSH_HOST }}
+          SSH_PASS: ${{ secrets.SSH_PASS }}
+          DISCORD_TOKEN: ${{ secrets.DISCORD_TOKEN }}
+        run: |
+          ansible-playbook -i $SSH_HOST, -u "$SSH_USER" -e "package_path=$(pwd)/package.list" .github/workflows/build/build-bot.yaml -vv
+
+      - name: Kill the VPN
+        if: always()
+        run: sudo killall openconnect
