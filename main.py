@@ -29,6 +29,10 @@ from discord.ext import commands
 from discord import utils
 import discord
 
+# Setup intents
+intents = discord.Intents.default()
+intents.members = True
+
 
 class debug_logger:
     # Logger meant for debugging at the terminal.
