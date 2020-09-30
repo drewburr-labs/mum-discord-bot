@@ -49,6 +49,10 @@
         state: stopped
         enabled: true # Ensure service starts at boot
       become: true
+      register: service_stop
+      failed_when:
+        - service_stop.failed
+        - 'Could not find the requested service' not in service_stop.msg
 
     - name: Update among-us service
       template:
