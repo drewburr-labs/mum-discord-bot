@@ -45,6 +45,7 @@ jobs:
           SSH_HOST: ${{ secrets.SSH_HOST }}
           SSH_PASS: ${{ secrets.SSH_PASS }}
           DISCORD_TOKEN: ${{ secrets.DISCORD_TOKEN }}
+          ANSIBLE_HOST_KEY_CHECKING: False
         run: |
           ansible-playbook -i $SSH_HOST, -u "$SSH_USER" -e "package_path=$(pwd)/package.list" .github/workflows/build/build-bot.yaml -vv
 
