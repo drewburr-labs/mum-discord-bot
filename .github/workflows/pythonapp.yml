@@ -33,11 +33,11 @@ jobs:
             pylint "$file" --exit-zero
           done
 
-      - name: Install OpenConnect
-        run: sudo apt install openconnect
+      # - name: Install OpenConnect
+      #   run: sudo apt install openconnect
 
-      - name: Connect to OpenConnect
-        run: echo '${{ secrets.SSH_PASS }}' | sudo openconnect vpn.drewburr.com:80 --user=${{ secrets.SSH_USER }} --passwd-on-stdin --background --http-auth=BASIC
+      # - name: Connect to OpenConnect
+      #   run: echo '${{ secrets.SSH_PASS }}' | sudo openconnect vpn.drewburr.com:80 --user=${{ secrets.SSH_USER }} --passwd-on-stdin --background --http-auth=BASIC
 
       - name: Deploy project to remote host
         env:
@@ -48,6 +48,6 @@ jobs:
         run: |
           ansible-playbook -i $SSH_HOST, -u "$SSH_USER" -e "package_path=$(pwd)/package.list" .github/workflows/build/build-bot.yaml -vv
 
-      - name: Kill the VPN
-        if: always()
-        run: sudo killall openconnect
+      # - name: Kill the VPN
+      #   if: always()
+      #   run: sudo killall openconnect
