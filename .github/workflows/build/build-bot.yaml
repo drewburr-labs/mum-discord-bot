@@ -52,7 +52,7 @@
       register: service_stop
       failed_when:
         - service_stop.failed
-        - 'Could not find the requested service' not in service_stop.msg
+        - "'Could not find the requested service' not in service_stop.msg"
 
     - name: Update among-us service
       template:
