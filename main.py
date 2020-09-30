@@ -267,8 +267,8 @@ async def initialize_lobby(guild, seed_channel, member):
     The creating member will be granted access to manage the channels in this category.
     """
 
-    # Generate a voice channel name, based on the username
-    # Drewburr's channel
+    # Generate a lobby, based on the username
+    # Drewburr's Lobby
     category_name = f"{member.name}'s Lobby"
 
     category = await guild.create_category(category_name)
