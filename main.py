@@ -361,6 +361,8 @@ async def code(ctx, args):
     if is_lobby(ctx.channel.category) and args.isalpha() and len(args) == 6:
         await ctx.channel.edit(name=args)
 
+        await ctx.send(f"{ctx.channel.mention} The game code is `{args}`")
+
 
 @BOT.command(name="promote")
 @commands.has_permissions(manage_channels=True)
