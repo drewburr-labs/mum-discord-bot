@@ -366,7 +366,7 @@ async def code(ctx, args=None):
         # User is requesting the game code
         if ctx.channel.topic is None:
             await ctx.send(
-                f"A game code hasn't been set yet! Use {ctx.prefix}code to set one.")
+                f"A game code hasn't been set yet! Use `{ctx.prefix}code` to set one.")
         else:
             await ctx.send(f"{ctx.author.mention} The game code is `{ctx.channel.topic}`")
 
