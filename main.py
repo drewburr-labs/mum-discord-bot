@@ -247,7 +247,7 @@ async def send_lobby_welcome_message(text_channel):
             },
             {
                 "name": f"The `{prefix}code` command",
-                "value": f"Use the `{prefix}code ABCXYZ` command to communicate game codes. This command also has the alias `{prefix}c`.",
+                "value": f"Use the `{prefix}code` command to communicate game codes. Use this command to get the current game code, or set a new one with `{prefix}code ABCXYZ`. This command also has the alias `{prefix}c`.",
             },
             # {
             #     "name": "Field2",
@@ -347,23 +347,35 @@ async def clear_member_lobby_overwrites(member, category):
 
 @BOT.command(name="code", aliases=["c"])
 @commands.check(ctx_is_lobby)
-async def code(ctx, args):
+async def code(ctx, args=None):
 
     # Used to set a text-channel's name to the name of a game code. # May be removed
     """
-    Used to communicate a game code to the current lobby.
+    Used to communicate a game code to the current lobby, or recieve the current game code.
 
     Codes should be all alpha charactrers, and 6 characters long.
 
     Code will be re-messaged to the channel with a mention to the text chat.
+    The channel topic will be updated to the game code.
     """
 
     # TODO: This does not publish an error message when code criteria isn't met
     # NOTE: Not sure if this should throw an error message
 
-    if is_lobby(ctx.channel.category) and args.isalpha() and len(args) == 6:
-        # await ctx.channel.edit(name=args)
+    if args is None:
+        # User is requesting the game code
+        if ctx.channel.topic is None:
+            await ctx.send(
+                f"A game code hasn't been set yet! Use {ctx.prefix}code to set one.")
+        else:
+            await ctx.send(f"{ctx.author.mention} The game code is `{ctx.channel.topic}`")
+
+    elif is_lobby(ctx.channel.category) and args.isalpha() and len(args) == 6:
+        await ctx.channel.edit(topic=args)
+
         await ctx.send(f"{ctx.channel.mention} The game code is `{args}`")
+    else:
+        print("Game code did not meet requirements.")
 
 
 @BOT.command(name="promote")
