@@ -348,19 +348,21 @@ async def clear_member_lobby_overwrites(member, category):
 @BOT.command(name="code", aliases=["c"])
 @commands.check(ctx_is_lobby)
 async def code(ctx, args):
+
+    # Used to set a text-channel's name to the name of a game code. # May be removed
     """
-    Used to set a text-channel's name to the name of a game code.
+    Used to communicate a game code to the current lobby.
 
     Codes should be all alpha charactrers, and 6 characters long.
 
-    This should only work in a lobby.
+    Code will be re-messaged to the channel with a mention to the text chat.
     """
 
     # TODO: This does not publish an error message when code criteria isn't met
+    # NOTE: Not sure if this should throw an error message
 
     if is_lobby(ctx.channel.category) and args.isalpha() and len(args) == 6:
-        await ctx.channel.edit(name=args)
-
+        # await ctx.channel.edit(name=args)
         await ctx.send(f"{ctx.channel.mention} The game code is `{args}`")
 
 
