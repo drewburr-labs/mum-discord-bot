@@ -29,6 +29,8 @@ from discord.ext import commands
 from discord import utils
 import discord
 
+import src.color_roles as color_roles
+
 # # Setup intents
 # intents = discord.Intents.default()
 # intents.members = True
@@ -415,5 +417,8 @@ async def on_command_error(ctx, error):
     else:
         logger.error(
             f'Unknown error. Invocation: {ctx.message.content}. \nError: {error}')
+
+# Import custom cogs
+color_roles.setup(BOT, logger)
 
 BOT.run(TOKEN)
