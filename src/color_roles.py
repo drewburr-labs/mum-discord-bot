@@ -93,11 +93,6 @@ class color_roles(commands.Cog):
 
     @commands.Cog.listener()
     async def on_raw_reaction_add(self, payload):
-
-        print('Reaction added!')
-        print(payload)
-
-        # guild = payload.guild
         channel_id = payload.channel_id
         message_id = payload.message_id
         member = payload.member
@@ -113,13 +108,26 @@ class color_roles(commands.Cog):
                 message = await role_channel.fetch_message(message_id)
                 await message.remove_reaction(emoji, member)
 
+                # Clear any assigned color roles, and cache new role
+                member_roles = member.roles
                 for item in self.color_map:
-                    if item[0] == emoji.name:
-                        role_name = item[1]
+                    role_name = item[1]
+                    emoji_name = item[0]
+
+                    role = utils.get(member.guild.roles, name=role_name)
+                    if role in member_roles:
+                        await member.remove_roles(role)
+                        self.logger.info(
+                            f'Removed {member.name} from color role {role_name}')
+
+                    if emoji_name == emoji.name:
+                        new_role = role
 
                 # Assign role
-                role = utils.get(member.guild.roles, name=role_name)
-                await member.add_roles(role)
+                if new_role.name != 'Remove Color':
+                    await member.add_roles(new_role)
+                    self.logger.info(
+                        f'Added {member.name} to color role {new_role.name}')
 
 
 def setup(bot, logger):
