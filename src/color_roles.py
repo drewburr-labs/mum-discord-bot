@@ -16,7 +16,6 @@ class color_roles(commands.Cog):
         self.bot = bot
         self.logger = logger
         self.channel_name = 'color-roles'
-        self.reaction_message = None
 
         self.color_map = (
             ('crewmate_red', 'Red'),
