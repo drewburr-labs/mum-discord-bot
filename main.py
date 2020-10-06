@@ -364,6 +364,8 @@ async def code(ctx, args=None):
     # TODO: This does not publish an error message when code criteria isn't met
     # NOTE: Not sure if this should throw an error message
 
+    category = ctx.channel.category
+
     if args is None:
         # User is requesting the game code
         if ctx.channel.topic is None:
@@ -372,12 +374,14 @@ async def code(ctx, args=None):
         else:
             await ctx.send(f"{ctx.author.mention} The game code is `{ctx.channel.topic}`")
 
-    elif is_lobby(ctx.channel.category) and args.isalpha() and len(args) == 6:
+    elif is_lobby(category) and args.isalpha() and len(args) == 6:
+        logger.info(f"Updating code for category: '{category}' - {args}")
+        await ctx.send(f"{ctx.channel.mention} The game code is `{args}`")
+
         await ctx.channel.edit(topic=args)
 
-        await ctx.send(f"{ctx.channel.mention} The game code is `{args}`")
     else:
-        print("Game code did not meet requirements.")
+        logger.info(f"Game code did not meet requirements: {args}")
 
 
 @BOT.command(name="promote")
