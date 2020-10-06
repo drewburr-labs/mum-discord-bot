@@ -30,6 +30,7 @@ from discord import utils
 import discord
 
 import src.color_roles as color_roles
+import src.server_stats as server_stats
 
 # # Setup intents
 # intents = discord.Intents.default()
@@ -424,5 +425,6 @@ async def on_command_error(ctx, error):
 
 # Import custom cogs
 color_roles.setup(BOT, logger)
+server_stats.setup(BOT, logger)
 
 BOT.run(TOKEN)
