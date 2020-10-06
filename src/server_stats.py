@@ -32,13 +32,13 @@ class server_stats(commands.Cog):
             guild = self.bot.guilds[0]
 
         await self.update_member_count(guild)
+        self.logger.info('Server statistics have been updated.')
 
     @update_stats.before_loop
     async def wait_for_ready(self):
         """
         Wait until the bot is ready.
         """
-        print('Ensuring bot is ready')
         await self.bot.wait_until_ready()
 
     async def update_member_count(self, guild):
@@ -47,15 +47,10 @@ class server_stats(commands.Cog):
         """
         channel_prefix = 'Member Count:'
 
-        print('Updating the member count!')
-
         for channel in guild.voice_channels:
             if channel.category is self.category and channel.name.startswith(channel_prefix):
-                print('Channel found!')
                 member_count = len(channel.guild.members)
-                print(member_count)
                 await channel.edit(name=f'{channel_prefix} {member_count}')
-                print('Stat updated!')
 
 
 def setup(bot, logger):
