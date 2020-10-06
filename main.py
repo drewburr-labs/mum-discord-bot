@@ -71,6 +71,7 @@ logger.addHandler(debug_handler)
 
 # Setup bot variables
 load_dotenv()
+APP_DIR = os.getenv('APP_DIR')
 TOKEN = os.getenv('DISCORD_TOKEN')
 BOT = commands.Bot(command_prefix=os.getenv('PREFIX'))
 
@@ -409,7 +410,7 @@ async def promote(ctx, user: discord.User):
 @commands.check(ctx_is_lobby)
 async def map(ctx, args=None):
 
-    maps_path = './maps/'
+    maps_path = APP_DIR + '/maps/'
     maps = {
         'mira': 'Mira.png',
         'polus': 'Polus.png',
@@ -448,7 +449,7 @@ async def map(ctx, args=None):
         with open(maps_path + map_image, 'rb') as image:
             fp = discord.File(image)
             await ctx.send(file=fp)
-            logger.info(f'Uploaded map {map_image} for {ctx.author.name}.')
+            logger.info(f'Uploaded map {map_image} for {user.name}.')
     except TypeError:
         pass
 
