@@ -32,6 +32,8 @@ import discord
 import src.color_roles as color_roles
 import src.server_stats as server_stats
 
+import io
+
 # # Setup intents
 # intents = discord.Intents.default()
 # intents.members = True
@@ -252,6 +254,10 @@ async def send_lobby_welcome_message(text_channel):
                 "name": f"The `{prefix}code` command",
                 "value": f"Use the `{prefix}code` command to communicate game codes. Use this command to get the current game code, or set a new one with `{prefix}code ABCXYZ`. This command also has the alias `{prefix}c`.",
             },
+            {
+                "name": f"Need a map?",
+                "value": f"Have a new player, or forget the locations of cameras and vents? The `{prefix}map` command is here to help! **Tip:** Maps can also be requested by name `{prefix}map Polus`."
+            }
             # {
             #     "name": "Field2",
             #     "value": "This is a message?",
@@ -397,6 +403,54 @@ async def promote(ctx, user: discord.User):
     if is_lobby(ctx.channel.category):
         await initialize_lobby_admin(user, ctx.channel.category)
         await ctx.send(f"{user.mention} has been promoted!")
+
+
+@BOT.command(name="map")
+@commands.check(ctx_is_lobby)
+async def map(ctx, args=None):
+
+    maps_path = './maps/'
+    maps = {
+        'mira': 'Mira.png',
+        'polus': 'Polus.png',
+        'skeld': 'Skeld.jpg'
+    }
+    emoji_map = {
+        '🚀': 'skeld',
+        '✈️': 'mira',
+        '❄️': 'polus',
+    }
+
+    # Create the request message
+    request_msg = 'Select a map by reacting to this message.'
+    for emoji, name in emoji_map.items():
+        request_msg += f'\n{emoji} - {name.capitalize()}'
+
+    if args is None:
+        message = await ctx.send(request_msg)
+        for emoji in emoji_map:
+            await message.add_reaction(emoji)
+
+        # Reaction must not be from the bot, message must be the one just sent, and emoji must be valid
+        def check(reaction, user):
+            return user != message.author and reaction.message.id == message.id and reaction.emoji in emoji_map
+
+        reaction, user = await BOT.wait_for('reaction_add', check=check, timeout=60)
+        map_image = maps.get(emoji_map[reaction.emoji])
+    else:
+        map_image = maps.get(args.lower())
+        # Run the function again to print message
+        # Will throw a TypeError below
+        if map_image is None:
+            await map(ctx)
+
+    try:
+        with open(maps_path + map_image, 'rb') as image:
+            fp = discord.File(image)
+            await ctx.send(file=fp)
+            logger.info(f'Uploaded map {map_image} for {ctx.author.name}.')
+    except TypeError:
+        pass
 
 
 @BOT.event
