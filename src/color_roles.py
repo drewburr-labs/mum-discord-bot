@@ -17,6 +17,7 @@ class color_roles(commands.Cog):
         self.logger = logger
         self.channel_name = 'color-roles'
 
+        self.color_roles_title = 'Color Roles'
         self.color_map = (
             ('crewmate_red', 'Red'),
             ('crewmate_orange', 'Orange'),
@@ -33,10 +34,16 @@ class color_roles(commands.Cog):
             ('no', 'Remove Color')
         )
 
+        self.crewmate_role_title = 'Crewmates Roles'
+        self.crewmate_role_map = (
+            ('bigbrain', 'Crewmates'),
+            ('no', 'Remove Role')
+        )
+
     @commands.command(name="refresh")
     async def refresh_role_channel(self, ctx):
         """
-        Sets up the color_roles channel to ensure the messages are up to date.
+        Sets up the roles channel to ensure the messages are up to date.
         """
 
         role_channel = utils.get(
@@ -47,13 +54,10 @@ class color_roles(commands.Cog):
             await role_channel.purge()
 
             # Publish new messages
-            await self.setup_channel(role_channel)
+            await self.send_color_roles_msg(role_channel)
+            # await self.send_crewmate_role_msg(role_channel)
 
-    async def setup_channel(self, channel):
-        """
-        Adds message and reactions to the color_roles channel.
-        """
-
+    async def send_color_roles_msg(self, channel):
         # Get emojis for later use
         emoji_data = dict()
         for item in self.color_map:
@@ -71,7 +75,7 @@ class color_roles(commands.Cog):
 
         # https://discordpy.readthedocs.io/en/latest/api.html#embed
         embed_data = {
-            "title": "Color Roles",
+            "title": self.color_roles_title,
             "description": "Below is a list of colors that map to Crewmate colors! React to this message to get the assigned color.",
             "fields":
             [
@@ -92,6 +96,13 @@ class color_roles(commands.Cog):
 
     @commands.Cog.listener()
     async def on_raw_reaction_add(self, payload):
+        """
+        Handles determining if an add reaction is actionable, and what action should be taken
+
+        All reactions must be from a non-bot user, and must be made to a message in the roles channel.
+
+        All messages in the roles channel are assumed to contain a single embed.
+        """
         channel_id = payload.channel_id
         message_id = payload.message_id
         member = payload.member
@@ -107,26 +118,32 @@ class color_roles(commands.Cog):
                 message = await role_channel.fetch_message(message_id)
                 await message.remove_reaction(emoji, member)
 
-                # Clear any assigned color roles, and cache new role
-                member_roles = member.roles
-                for item in self.color_map:
-                    role_name = item[1]
-                    emoji_name = item[0]
+                if message.embeds[0].title == self.color_roles_title:
+                    await self.color_roles_handler(member, emoji)
 
-                    role = utils.get(member.guild.roles, name=role_name)
-                    if role in member_roles:
-                        await member.remove_roles(role)
-                        self.logger.info(
-                            f'Removed {member.name} from color role {role_name}')
+    async def color_roles_handler(self, member, emoji):
+        # Clear any assigned color roles, and cache new role
+        new_role = None
+        member_roles = member.roles
 
-                    if emoji_name == emoji.name:
-                        new_role = role
+        for item in self.color_map:
+            role_name = item[1]
+            emoji_name = item[0]
 
-                # Assign role
-                if new_role.name != 'Remove Color':
-                    await member.add_roles(new_role)
-                    self.logger.info(
-                        f'Added {member.name} to color role {new_role.name}')
+            role = utils.get(member.guild.roles, name=role_name)
+            if role in member_roles:
+                await member.remove_roles(role)
+                self.logger.info(
+                    f'Removed {member.name} from color role {role_name}')
+
+            if emoji_name == emoji.name:
+                new_role = role
+
+        # Assign role
+        if new_role is not None and new_role.name != 'Remove Color':
+            await member.add_roles(new_role)
+            self.logger.info(
+                f'Added {member.name} to color role {new_role.name}')
 
 
 def setup(bot, logger):
