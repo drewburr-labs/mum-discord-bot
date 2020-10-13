@@ -29,7 +29,7 @@ from discord.ext import commands
 from discord import utils
 import discord
 
-import src.color_roles as color_roles
+import src.self_roles as self_roles
 import src.server_stats as server_stats
 
 import io
@@ -479,7 +479,7 @@ async def on_command_error(ctx, error):
             f'Unknown error. Invocation: {ctx.message.content}. \nError: {error}')
 
 # Import custom cogs
-color_roles.setup(BOT, logger)
+self_roles.setup(BOT, logger)
 server_stats.setup(BOT, logger)
 
 BOT.run(TOKEN)
