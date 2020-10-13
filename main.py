@@ -31,6 +31,7 @@ import discord
 
 import src.self_roles as self_roles
 import src.server_stats as server_stats
+import src.admin_logging as admin_logging
 
 import io
 
@@ -481,5 +482,6 @@ async def on_command_error(ctx, error):
 # Import custom cogs
 self_roles.setup(BOT, logger)
 server_stats.setup(BOT, logger)
+admin_logging.setup(BOT, logger)
 
 BOT.run(TOKEN)
