@@ -43,7 +43,7 @@ class self_roles(commands.Cog):
                     ('crewmate_yellow', 'Crewmates'),
                     ('no', 'Remove role')
                 ),
-                'description': 'React to this message to be assigned the Crewmate role. This role can be used by players looking to create a game.'
+                'description': 'React to this message to be assigned the Crewmate role. This role can be pinged by members who are looking to create a game.'
             }
         }
 
