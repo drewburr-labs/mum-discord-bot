@@ -32,6 +32,7 @@ import discord
 import src.self_roles as self_roles
 import src.server_stats as server_stats
 import src.admin_logging as admin_logging
+import src.server_rules as server_rules
 
 import io
 
@@ -483,5 +484,6 @@ async def on_command_error(ctx, error):
 self_roles.setup(BOT, logger)
 server_stats.setup(BOT, logger)
 admin_logging.setup(BOT, logger)
+server_rules.setup(BOT, logger)
 
 BOT.run(TOKEN)
