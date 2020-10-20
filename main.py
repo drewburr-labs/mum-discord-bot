@@ -428,8 +428,8 @@ async def promote(ctx, user: discord.User):
 
 
 @BOT.command(name="votekick")
-@commands.has_permissions(administrator=True)
 @commands.check(ctx_is_lobby)
+@commands.has_permissions(administrator=True)
 async def votekick(ctx, sus_member: discord.Member, *, reason):
     """
     Starts a vote to kick a member from a lobby.
