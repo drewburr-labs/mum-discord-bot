@@ -35,6 +35,7 @@ import src.admin_logging as admin_logging
 import src.server_rules as server_rules
 
 import io
+import asyncio
 
 # # Setup intents
 # intents = discord.Intents.default()
@@ -90,6 +91,24 @@ class UserError(discord.ext.commands.CommandError):
 
     def __init__(self, message):
         self.message = message
+
+
+def admin_log(channel_name):
+    """
+    Used to post messages to the server's admin log.
+    """
+
+    async def log_message(guild, message):
+        """
+        Posts a message to the server's log channel.
+        """
+        log_channel = utils.get(guild.text_channels, name=channel_name)
+        return await log_channel.send(message)
+
+    return log_message
+
+
+admin_logger = admin_log('bot-logs')
 
 
 @BOT.event
@@ -260,10 +279,10 @@ async def send_lobby_welcome_message(text_channel):
             {
                 "name": f"Need a map?",
                 "value": f"Have a new player, or forget the locations of cameras and vents? The `{prefix}map` command is here to help! **Tip:** Maps can also be requested by name `{prefix}map Polus`."
-            }
+            },
             # {
-            #     "name": "Field2",
-            #     "value": "This is a message?",
+            #     "name": "Kicking a user",
+            #     "value": f"If a member is refusing to leave, you can vote to kick this user with the `{prefix}votekick` command. Usage `{prefix}votekick @drewburr Reason for kicking`",
             # },
         ]
     }
@@ -406,6 +425,101 @@ async def promote(ctx, user: discord.User):
     if is_lobby(ctx.channel.category):
         await initialize_lobby_admin(user, ctx.channel.category)
         await ctx.send(f"{user.mention} has been promoted!")
+
+
+@BOT.command(name="votekick")
+@commands.has_permissions(administrator=True)
+@commands.check(ctx_is_lobby)
+async def votekick(ctx, sus_member: discord.Member, *, reason):
+    """
+    Starts a vote to kick a member from a lobby.
+
+    Member will be unable to rejoin the lobby if kicked.
+    """
+    voice_channel = ctx.author.voice.channel
+    member_count = len(voice_channel.members)
+
+    emoji_data = {
+        'yes': None,
+        'no': None,
+    }
+
+    member_names = list()
+    for member in voice_channel.members:
+        member_names.append(member.name)
+
+    name_list = '\n'.join(member_names)
+
+    # Majority, rounded up.
+    vote_limit = round(member_count/2)
+
+    embed_data = {
+        "title": "Votekick started!",
+        "description": f"{ctx.author.mention} has started a vote to kick {sus_member.mention} from the lobby. If kicked, {sus_member.name} will be unable to rejoin the lobby.\n\nReason: {reason}",
+        "fields":
+        [
+            {
+                "name": "Votes required to kick",
+                "value": f"{vote_limit}",
+            },
+            {
+                "name": "Members allowed to vote",
+                "value": f"{name_list}",
+            },
+        ]
+    }
+
+    for name in emoji_data:
+        emoji = utils.get(ctx.guild.emojis, name=name)
+        emoji_data[name] = emoji
+
+    embed = discord.Embed.from_dict(embed_data)
+    message = await ctx.channel.send(embed=embed)
+
+    await admin_logger(ctx.guild, f"{ctx.author.name} has initiated a vote to kick {sus_member.name} from {ctx.channel.category}. Reason: {reason}. Votes required: {vote_limit}.")
+
+    for emoji in emoji_data.values():
+        await message.add_reaction(emoji)
+
+    def check_kick(reaction, user):
+        """
+        Checks if the vote count has exceeded the vote limit.
+
+        Returns True if the user is eligible for kicking.
+        """
+        if user != message.author and reaction.message.id == message.id and reaction.emoji is emoji_data['yes']:
+            cache_message = discord.utils.get(
+                ctx.bot.cached_messages, id=message.id)
+            reactions = cache_message.reactions
+
+            embed = cache_message.embeds[0].to_dict()
+
+            valid_users = embed['fields'][1]['value'].splitlines()
+
+            if user.name in valid_users:
+                for reaction in reactions:
+                    # Must be greater than vote limit to account for the bot's reaction
+                    if reaction.emoji.name == 'yes' and reaction.count > vote_limit:
+                        return True
+
+        return False
+
+    await BOT.wait_for('reaction_add', check=check_kick, timeout=120)
+
+    # Disconnect the user and deny the ability to reconnect
+    if sus_member is not None:
+        await sus_member.move_to(ctx.guild.afk_channel, reason="Kicked from Lobby")
+
+        await admin_logger(ctx.guild, f"{sus_member.name} has been kicked from {ctx.channel.category}. Reason: {reason}")
+
+        # Update user's permission overwrites
+        discord.PermissionOverwrite(connect=False)
+        overwrite = discord.PermissionOverwrite(connect=False)
+
+        # Execute this to ensure there's enough time before updating permissions
+        await asyncio.sleep(1)
+
+        await voice_channel.set_permissions(sus_member, overwrite=overwrite)
 
 
 @BOT.command(name="map")
