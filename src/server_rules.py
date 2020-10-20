@@ -124,7 +124,7 @@ class server_rules(commands.Cog):
                 field['value'] = '\n'.join(value)
 
         embed = discord.Embed.from_dict(message_data)
-        message = await channel.send(embed=embed)
+        await channel.send(embed=embed)
 
 
 def setup(bot, logger):
