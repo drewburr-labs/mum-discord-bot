@@ -76,9 +76,10 @@ class server_rules(commands.Cog):
                     {
                         "name": "Gameplay etiquette",
                         "value": [
-                            "- Do not shout or insult members if you are killed or lose a game.",
+                            "- Don't shout or insult members if you are killed or lose a game.",
                             "- If you are joining a new lobby, understand a game may already be in progress.",
-                            "- Do not throw the game. (Exposing your fellow imposter(s), sharing information between rounds, talking when dead.)",
+                            "- The crewmate who calls a meeting should be given speaking priority",
+                            "- Don't throw the game. (Exposing your fellow imposter(s), sharing information between rounds, talking when dead.)",
                             "- Don't stall the game because you're being salty.",
                             "- No hacking."
                         ]
