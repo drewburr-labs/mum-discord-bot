@@ -74,11 +74,11 @@ class self_roles(commands.Cog):
         # Get emojis for later use
         emoji_data = dict()
         for item in reaction_map:
-            role = item[0]
-            text = item[1]
-            emoji = utils.get(channel.guild.emojis, name=role)
+            emoji_name = item[0]
+            role_name = item[1]
+            emoji = utils.get(channel.guild.emojis, name=emoji_name)
 
-            emoji_data[text] = emoji
+            emoji_data[role_name] = emoji
 
         # Setup embed message
         message_text = ""
