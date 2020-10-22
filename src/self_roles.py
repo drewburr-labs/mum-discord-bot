@@ -47,6 +47,41 @@ class self_roles(commands.Cog):
             }
         }
 
+    @commands.command(name="colors")
+    async def colors(self, ctx):
+        """
+        Prints the number of members in each color role.
+        """
+        data = dict()
+        color_map = self.message_data['Color Roles']['reaction_map']
+
+        for item in color_map:
+            emoji_name = item[0]
+            role_name = item[1]
+
+            if emoji_name != 'no':
+                emoji = utils.get(ctx.guild.emojis, name=emoji_name)
+                role = utils.get(ctx.guild.roles, name=role_name)
+
+                emoji_text = f"<:{emoji.name}:{emoji.id}>"
+                member_count = len(role.members)
+
+                data[emoji_text] = member_count
+
+        message = list()
+        sorted_data = sorted(data, key=data.get, reverse=True)
+
+        for item in sorted_data:
+            message.append(f'{item} - {data[item]}')
+
+        embed_data = {
+            "title": f'Color Role Totals',
+            "description": '\n'.join(message),
+        }
+
+        embed = discord.Embed.from_dict(embed_data)
+        await ctx.channel.send(embed=embed)
+
     @commands.command(name="refresh")
     async def refresh_role_channel(self, ctx):
         """
