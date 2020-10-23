@@ -93,24 +93,6 @@ class UserError(discord.ext.commands.CommandError):
         self.message = message
 
 
-def admin_log(channel_name):
-    """
-    Used to post messages to the server's admin log.
-    """
-
-    async def log_message(guild, message):
-        """
-        Posts a message to the server's log channel.
-        """
-        log_channel = utils.get(guild.text_channels, name=channel_name)
-        return await log_channel.send(message)
-
-    return log_message
-
-
-admin_logger = admin_log('bot-logs')
-
-
 @BOT.event
 async def on_ready():
     """Produces log for when the bot is ready for action"""
@@ -476,7 +458,8 @@ async def votekick(ctx, sus_member: discord.Member, *, reason):
     embed = discord.Embed.from_dict(embed_data)
     message = await ctx.channel.send(embed=embed)
 
-    await admin_logger(ctx.guild, f"{ctx.author.name} has initiated a vote to kick {sus_member.name} from {ctx.channel.category}. Reason: {reason}. Votes required: {vote_limit}.")
+    admin_logger = BOT.get_cog('admin_logging')
+    await admin_logger.bot_log(ctx.guild, f"{ctx.author.name} has initiated a vote to kick {sus_member.name} from {ctx.channel.category}. Reason: {reason}. Votes required: {vote_limit}.")
 
     for emoji in emoji_data.values():
         await message.add_reaction(emoji)
