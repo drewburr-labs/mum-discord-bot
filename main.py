@@ -262,10 +262,10 @@ async def send_lobby_welcome_message(text_channel):
                 "name": f"Need a map?",
                 "value": f"Have a new player, or forget the locations of cameras and vents? The `{prefix}map` command is here to help! **Tip:** Maps can also be requested by name `{prefix}map Polus`."
             },
-            # {
-            #     "name": "Kicking a user",
-            #     "value": f"If a member is refusing to leave, you can vote to kick this user with the `{prefix}votekick` command. Usage `{prefix}votekick @drewburr Reason for kicking`",
-            # },
+            {
+                "name": "Kicking a user",
+                "value": f"If a member is refusing to leave, you can vote to kick this user with the `{prefix}votekick` command. Usage `{prefix}votekick @drewburr Reason for kicking`",
+            },
         ]
     }
 
@@ -411,7 +411,6 @@ async def promote(ctx, user: discord.User):
 
 @BOT.command(name="votekick")
 @commands.check(ctx_is_lobby)
-@commands.has_permissions(administrator=True)
 async def votekick(ctx, sus_member: discord.Member, *, reason):
     """
     Starts a vote to kick a member from a lobby.
