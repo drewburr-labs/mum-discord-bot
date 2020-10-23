@@ -23,6 +23,9 @@ class admin_logging(commands.Cog):
         await channel.send(f"{member.name} has left the server.")
 
     async def bot_log(self, guild, msg):
+        """
+        Sends a message to the defined bot_log_channel_name.
+        """
         channel = utils.get(guild.text_channels,
                             name=self.bot_log_channel_name)
 
