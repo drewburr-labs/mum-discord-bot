@@ -557,7 +557,7 @@ async def map(ctx, args=None):
 
 
 @BOT.command(name="mapvote")
-# @commands.check(ctx_is_lobby)
+@commands.check(ctx_is_lobby)
 async def mapvote(ctx, args=None):
     """
     Start a vote to select the next map to play.
