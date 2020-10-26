@@ -263,6 +263,10 @@ async def send_lobby_welcome_message(text_channel):
                 "value": f"Have a new player, or forget the locations of cameras and vents? The `{prefix}map` command is here to help! **Tip:** Maps can also be requested by name `{prefix}map Polus`."
             },
             {
+                "name": "Vote on a map",
+                "value": f"Use the `{prefix}mapvote` command to vote on the map to play next."
+            },
+            {
                 "name": "Kicking a user",
                 "value": f"If a member is refusing to leave, you can vote to kick this user with the `{prefix}votekick` command. Usage `{prefix}votekick @drewburr Reason for kicking`",
             },
@@ -550,6 +554,55 @@ async def map(ctx, args=None):
             logger.info(f'Uploaded map {map_image} for {user.name}.')
     except TypeError:
         pass
+
+
+@BOT.command(name="mapvote")
+# @commands.check(ctx_is_lobby)
+async def mapvote(ctx, args=None):
+    """
+    Start a vote to select the next map to play.
+    """
+    votetime_min = 1
+    emoji_map = {
+        '🚀': 'skeld',
+        '✈️': 'mira',
+        '❄️': 'polus',
+    }
+
+    # Create the request message
+    request_msg = f'Vote for a map by reacting to this message.\nThe poll will close in {votetime_min} minute(s).'
+    for emoji, name in emoji_map.items():
+        request_msg += f'\n{emoji} - {name.capitalize()}'
+
+    message = await ctx.send(request_msg)
+    for emoji in emoji_map:
+        await message.add_reaction(emoji)
+
+    await asyncio.sleep(votetime_min * 60)
+
+    cache_message = discord.utils.get(
+        ctx.bot.cached_messages, id=message.id)
+
+    votes = dict()
+    for reaction in cache_message.reactions:
+        emoji_name = emoji_map.get(reaction.emoji)
+        vote_count = reaction.count
+        vote_text = f'{reaction.emoji} {emoji_name.capitalize()}'
+
+        if emoji_name is not None:
+            votes[vote_text] = vote_count
+
+    description = str()
+    for item in votes:
+        description += f'{item} - {votes[item]}\n'
+
+    embed_data = {
+        'title': 'Mapvote Results',
+        'description': description
+    }
+
+    embed = discord.Embed.from_dict(embed_data)
+    await ctx.channel.send(embed=embed)
 
 
 @BOT.event
