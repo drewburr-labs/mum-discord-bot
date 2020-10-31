@@ -102,8 +102,6 @@ class self_roles(commands.Cog):
                 description = data.get('description')
                 reaction_map = data['reaction_map']
                 await self.send_roles_message(role_channel, title, description, reaction_map)
-                # await self.send_color_roles_msg(role_channel)
-                # await self.send_crewmate_role_msg(role_channel)
 
     async def send_roles_message(self, channel, title, description, reaction_map):
         # Get emojis for later use
