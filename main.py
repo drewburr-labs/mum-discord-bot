@@ -37,10 +37,6 @@ import src.server_rules as server_rules
 import io
 import asyncio
 
-# # Setup intents
-# intents = discord.Intents.default()
-# intents.members = True
-
 
 class debug_logger:
     # Logger meant for debugging at the terminal.
@@ -76,7 +72,12 @@ logger.addHandler(debug_handler)
 load_dotenv()
 APP_DIR = os.getenv('APP_DIR')
 TOKEN = os.getenv('DISCORD_TOKEN')
-BOT = commands.Bot(command_prefix=os.getenv('PREFIX'))
+
+# Setup intents
+intents = discord.Intents.default()
+intents.members = True
+
+BOT = commands.Bot(command_prefix=os.getenv('PREFIX'), intents=intents)
 
 
 # Define custom exception
