@@ -22,8 +22,9 @@ class rule_suggestions(commands.Cog):
 
         Logs messages and author to bot-logs
         """
+        mod_role = utils.get(message.guild.roles, name="Mod")
 
-        if message.channel.name == self.channel and not message.author.bot:
+        if message.channel.name == self.channel and mod_role not in message.author.roles and not message.author.bot:
             await message.delete()
             repost_message = await message.channel.send(message.content)
 
@@ -33,9 +34,9 @@ class rule_suggestions(commands.Cog):
             await repost_message.add_reaction(yes_emoji)
             await repost_message.add_reaction(no_emoji)
 
-            admin_logger = self.bot.get_cog('admin_logging')
-            await admin_logger.bot_log(message.guild,
-                                       f"{message.author} added a rule suggestion:\n{message.content}")
+            # admin_logger = self.bot.get_cog('admin_logging')
+            # await admin_logger.bot_log(message.guild,
+            #                            f"{message.author} added a rule suggestion:\n{message.content}")
 
 
 def setup(bot, logger):
