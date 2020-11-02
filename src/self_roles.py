@@ -22,25 +22,25 @@ class self_roles(commands.Cog):
         self.message_data = {
             'Color Roles': {
                 'reaction_map': (
-                    ('body_red', 'Red'),
-                    ('body_orange', 'Orange'),
-                    ('body_yellow', 'Yellow'),
-                    ('body_lime', "Lime"),
-                    ('body_darkgreen', 'Dark Green'),
-                    ('body_cyan', 'Cyan'),
-                    ('body_blue', 'Blue'),
-                    ('body_purple', "Purple"),
-                    ('body_pink', 'Pink'),
-                    ('body_brown', 'Brown'),
-                    ('body_black', 'Black'),
-                    ('body_white', 'White'),
+                    ('crewmate_red', 'Red'),
+                    ('crewmate_orange', 'Orange'),
+                    ('crewmate_yellow', 'Yellow'),
+                    ('crewmate_lime', "Lime"),
+                    ('crewmate_darkgreen', 'Dark Green'),
+                    ('crewmate_cyan', 'Cyan'),
+                    ('crewmate_blue', 'Blue'),
+                    ('crewmate_purple', "Purple"),
+                    ('crewmate_pink', 'Pink'),
+                    ('crewmate_brown', 'Brown'),
+                    ('crewmate_black', 'Black'),
+                    ('crewmate_white', 'White'),
                     ('no', 'Remove Color')
                 ),
                 'description': 'Below is a list of colors that map to Crewmate colors! React to this message to be given the assigned color.'
             },
             'Crewmates Role': {
                 'reaction_map': (
-                    ('body_yellow', 'Crewmates'),
+                    ('crewmate_yellow', 'Crewmates'),
                     ('no', 'Remove role')
                 ),
                 'description': 'React to this message to be assigned the Crewmate role. This role can be pinged by members who are looking to create a game.'
