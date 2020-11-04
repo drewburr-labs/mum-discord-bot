@@ -78,7 +78,8 @@ TOKEN = os.getenv('DISCORD_TOKEN')
 intents = discord.Intents.default()
 intents.members = True
 
-BOT = commands.Bot(command_prefix=os.getenv('PREFIX'), intents=intents)
+BOT = commands.Bot(command_prefix=os.getenv('PREFIX'),
+                   intents=intents, case_insensitive=True)
 
 
 # Define custom exception
