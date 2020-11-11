@@ -499,7 +499,7 @@ async def votekick(ctx, sus_member: discord.Member, *, reason):
 
     member_kicked = True
     try:
-        await BOT.wait_for('reaction_add', check=check_kick, timeout=5)
+        await BOT.wait_for('reaction_add', check=check_kick, timeout=120)
     except asyncio.TimeoutError:
         member_kicked = False
 
