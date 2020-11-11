@@ -423,6 +423,7 @@ async def votekick(ctx, sus_member: discord.Member, *, reason):
 
     Member will be unable to rejoin the lobby if kicked.
     """
+    # This will throw an 'Unknown Channel' error if the kicked user is the last channel member.
     voice_channel = ctx.author.voice.channel
     member_count = len(voice_channel.members)
 
@@ -502,12 +503,11 @@ async def votekick(ctx, sus_member: discord.Member, *, reason):
     except asyncio.TimeoutError:
         member_kicked = False
 
-        # Disconnect the user and deny the ability to reconnect
+    # Disconnect the user and deny the ability to reconnect
     if member_kicked:
         await sus_member.move_to(ctx.guild.afk_channel, reason="Kicked from Lobby")
 
         # Update user's permission overwrites
-        discord.PermissionOverwrite(connect=False)
         overwrite = discord.PermissionOverwrite(connect=False)
 
         # Execute this to ensure there's enough time before updating permissions
@@ -515,14 +515,13 @@ async def votekick(ctx, sus_member: discord.Member, *, reason):
 
         await voice_channel.set_permissions(sus_member, overwrite=overwrite)
 
+    # Cache the current state of the message
     cache_message = discord.utils.get(
         ctx.bot.cached_messages, id=message.id)
 
     reactions = cache_message.reactions
     embed = cache_message.embeds[0].to_dict()
     valid_users = embed['fields'][1]['value'].splitlines()
-
-    print(valid_users)
 
     vote_data = {
         'yes': [],
@@ -537,7 +536,6 @@ async def votekick(ctx, sus_member: discord.Member, *, reason):
         if data is not None:
             users = await reaction.users().flatten()
             for user in users:
-                print('user: ' + user.display_name)
                 if user.display_name in valid_users:
                     # Add user to the list
                     data.append(user.display_name)
@@ -555,9 +553,9 @@ async def votekick(ctx, sus_member: discord.Member, *, reason):
         no_users = "None"
 
     if member_kicked:
-        description = f"{sus_member.display_name} has been kicked from {ctx.channel.category}.\nReason: {reason}"
+        description = f"{sus_member.display_name} has been kicked from {ctx.channel.category}.\nReason: {reason}\nVotes needed: {vote_limit}"
     else:
-        description = f"{sus_member.display_name} was **not** kicked from {ctx.channel.category}.\nReason: {reason}"
+        description = f"{sus_member.display_name} was **not** kicked from {ctx.channel.category}.\nReason: {reason}\nVotes needed: {vote_limit}"
 
     log_embed_data = {
         "title": "Votekick results",
