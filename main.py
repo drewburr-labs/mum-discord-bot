@@ -469,12 +469,15 @@ async def votekick(ctx, sus_member: discord.Member, *, reason):
     for emoji in emoji_data.values():
         await message.add_reaction(emoji)
 
+    yes_count = 0
+
     def check_kick(reaction, user):
         """
         Checks if the vote count has exceeded the vote limit.
 
         Returns True if the user is eligible for kicking.
         """
+        nonlocal yes_count
         if user != message.author and reaction.message.id == message.id and reaction.emoji is emoji_data['yes']:
             cache_message = discord.utils.get(
                 ctx.bot.cached_messages, id=message.id)
@@ -488,8 +491,8 @@ async def votekick(ctx, sus_member: discord.Member, *, reason):
                 for reaction in reactions:
                     # Must be greater than vote limit to account for the bot's reaction
                     if reaction.emoji.name == 'yes':
-                        yes_count[0] += 1
-                        if yes_count[0] > vote_limit:
+                        yes_count += 1
+                        if yes_count >= vote_limit:
                             return True
         return False
 
