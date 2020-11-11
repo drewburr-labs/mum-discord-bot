@@ -33,8 +33,8 @@ class new_member_logic(commands.Cog):
             if message.content.lower() == self.accept_msg.lower():
                 await message.author.add_roles(member_role)
 
-        if not message.embeds:
-            await message.delete()
+            if not message.embeds:
+                await message.delete()
 
     @commands.command(name="refresh-start-here")
     async def refresh_channel(self, ctx):

@@ -704,6 +704,6 @@ self_roles.setup(BOT, logger)
 server_stats.setup(BOT, logger)
 admin_logging.setup(BOT, logger)
 server_rules.setup(BOT, logger)
-# new_member_logic.setup(BOT, logger)
+new_member_logic.setup(BOT, logger)
 
 BOT.run(TOKEN)
