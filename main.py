@@ -292,7 +292,7 @@ async def initialize_lobby(guild, seed_channel, member):
 
     # Generate a lobby, based on the username
     # Drewburr's Lobby
-    category_name = f"{member.name}'s Lobby"
+    category_name = f"{member.display_name}'s Lobby"
 
     category = await guild.create_category(category_name)
 
@@ -310,7 +310,7 @@ async def initialize_lobby(guild, seed_channel, member):
 
     # Move the user to the lobby. Triggers 'on_voice_state_update'
     logger.info(
-        f'Moving {member.name} to channel: {voice_channel.name}')
+        f'Moving {member.display_name} to channel: {voice_channel.name}')
     await member.edit(voice_channel=voice_channel)
 
 
@@ -617,7 +617,7 @@ async def map(ctx, args=None):
         with open(maps_path + map_image, 'rb') as image:
             fp = discord.File(image)
             await ctx.send(file=fp)
-            logger.info(f'Uploaded map {map_image} for {user.name}.')
+            logger.info(f'Uploaded map {map_image} for {user.display_name}.')
     except TypeError:
         pass
 
