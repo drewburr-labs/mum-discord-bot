@@ -433,7 +433,7 @@ async def votekick(ctx, sus_member: discord.Member, *, reason):
 
     member_names = list()
     for member in voice_channel.members:
-        member_names.append(member.name)
+        member_names.append(member.display_name)
 
     name_list = '\n'.join(member_names)
 
@@ -442,7 +442,7 @@ async def votekick(ctx, sus_member: discord.Member, *, reason):
 
     embed_data = {
         "title": "Votekick started!",
-        "description": f"{ctx.author.mention} has started a vote to kick {sus_member.mention} from the lobby. If kicked, {sus_member.name} will be unable to rejoin the lobby.\n\nReason: {reason}",
+        "description": f"{ctx.author.mention} has started a vote to kick {sus_member.mention} from the lobby. If kicked, {sus_member.display_name} will be unable to rejoin the lobby.\n\nReason: {reason}",
         "fields":
         [
             {
@@ -464,7 +464,7 @@ async def votekick(ctx, sus_member: discord.Member, *, reason):
     message = await ctx.channel.send(embed=embed)
 
     admin_logger = BOT.get_cog('admin_logging')
-    await admin_logger.bot_log(ctx.guild, f"{ctx.author.name} has initiated a vote to kick {sus_member.name} from {ctx.channel.category}. Reason: {reason}. Votes required: {vote_limit}.")
+    await admin_logger.bot_log(ctx.guild, f"{ctx.author.display_name} has initiated a vote to kick {sus_member.display_name} from {ctx.channel.category}. Reason: {reason}. Votes required: {vote_limit}.")
 
     for emoji in emoji_data.values():
         await message.add_reaction(emoji)
@@ -484,21 +484,22 @@ async def votekick(ctx, sus_member: discord.Member, *, reason):
 
             valid_users = embed['fields'][1]['value'].splitlines()
 
-            if user.name in valid_users:
+            if user.display_name in valid_users:
                 for reaction in reactions:
                     # Must be greater than vote limit to account for the bot's reaction
                     if reaction.emoji.name == 'yes' and reaction.count > vote_limit:
                         return True
-
         return False
 
-    await BOT.wait_for('reaction_add', check=check_kick, timeout=120)
+    member_kicked = True
+    try:
+        await BOT.wait_for('reaction_add', check=check_kick, timeout=5)
+    except asyncio.TimeoutError:
+        member_kicked = False
 
-    # Disconnect the user and deny the ability to reconnect
-    if sus_member is not None:
+        # Disconnect the user and deny the ability to reconnect
+    if member_kicked:
         await sus_member.move_to(ctx.guild.afk_channel, reason="Kicked from Lobby")
-
-        await admin_logger(ctx.guild, f"{sus_member.name} has been kicked from {ctx.channel.category}. Reason: {reason}")
 
         # Update user's permission overwrites
         discord.PermissionOverwrite(connect=False)
@@ -508,6 +509,69 @@ async def votekick(ctx, sus_member: discord.Member, *, reason):
         await asyncio.sleep(1)
 
         await voice_channel.set_permissions(sus_member, overwrite=overwrite)
+
+    cache_message = discord.utils.get(
+        ctx.bot.cached_messages, id=message.id)
+
+    reactions = cache_message.reactions
+    embed = cache_message.embeds[0].to_dict()
+    valid_users = embed['fields'][1]['value'].splitlines()
+
+    print(valid_users)
+
+    vote_data = {
+        'yes': [],
+        'no': []
+    }
+
+    # Get the results of the vote
+    for reaction in reactions:
+        emoji_name = reaction.emoji.name
+        data = vote_data.get(emoji_name)
+        # If emoji_name is 'yes' or 'no'
+        if data is not None:
+            users = await reaction.users().flatten()
+            for user in users:
+                print('user: ' + user.display_name)
+                if user.display_name in valid_users:
+                    # Add user to the list
+                    data.append(user.display_name)
+                    # Update vote data
+                    vote_data[emoji_name] = data
+
+    yes_count = len(vote_data['yes'])
+    yes_users = '\n'.join(vote_data['yes'])
+    if not yes_users:
+        yes_users = "None"
+
+    no_count = len(vote_data['no'])
+    no_users = '\n'.join(vote_data['no'])
+    if not no_users:
+        no_users = "None"
+
+    if member_kicked:
+        description = f"{sus_member.display_name} has been kicked from {ctx.channel.category}.\nReason: {reason}"
+    else:
+        description = f"{sus_member.display_name} was **not** kicked from {ctx.channel.category}.\nReason: {reason}"
+
+    log_embed_data = {
+        "title": "Votekick results",
+        "description": description,
+        "fields": [
+            {
+                "name": f"Voted yes ({yes_count})",
+                "value": f"{yes_users}"
+            },
+            {
+                "name": f"Voted no ({no_count})",
+                "value": f"{no_users}"
+            },
+        ]
+    }
+
+    log_embed = discord.Embed.from_dict(log_embed_data)
+
+    await admin_logger.bot_log(ctx.guild, embed=log_embed)
 
 
 @BOT.command(name="map")
