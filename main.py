@@ -487,8 +487,10 @@ async def votekick(ctx, sus_member: discord.Member, *, reason):
             if user.display_name in valid_users:
                 for reaction in reactions:
                     # Must be greater than vote limit to account for the bot's reaction
-                    if reaction.emoji.name == 'yes' and reaction.count > vote_limit:
-                        return True
+                    if reaction.emoji.name == 'yes':
+                        yes_count[0] += 1
+                        if yes_count[0] > vote_limit:
+                            return True
         return False
 
     member_kicked = True
