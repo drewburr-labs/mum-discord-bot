@@ -271,7 +271,7 @@ async def send_lobby_welcome_message(text_channel):
             },
             {
                 "name": "Kicking a user",
-                "value": f"If a member is refusing to leave, you can vote to kick this user with the `{prefix}votekick` command. Usage `{prefix}votekick @drewburr Reason for kicking`",
+                "value": f"If a member needs to be removed from a lobby, you can vote to kick a user with the `{prefix}votekick` command. Usage `{prefix}votekick @drewburr Reason for kicking`",
             },
         ]
     }
