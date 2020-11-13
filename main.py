@@ -593,6 +593,7 @@ async def map(ctx, args=None):
         '✈️': 'mira',
         '❄️': 'polus',
     }
+    user = None  # Pylance (reportUnboundVariable)
 
     # Create the request message
     request_msg = 'Select a map by reacting to this message.'
