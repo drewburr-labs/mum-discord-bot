@@ -676,6 +676,50 @@ async def mapvote(ctx, args=None):
     await ctx.channel.send(embed=embed)
 
 
+@BOT.command(name="rename")
+@commands.check(ctx_is_lobby)
+async def rename(ctx, *, args):
+    """
+    Rename the current lobby.
+    Usage: !rename <New name>
+    Lobbies can be renamed twice every 10 minutes.
+    """
+
+    if args:
+        category = ctx.channel.category
+        await category.edit(name=f"{args} Lobby")
+    else:
+        raise UserError(
+            "This command requires an name. Ex: `!rename New lobby name`")
+
+
+@BOT.command(name="limit")
+@commands.check(ctx_is_lobby)
+async def limit(ctx, args):
+    """
+    Change the lobby's user limit. Use '0' to remove the limit.
+    Usage: !limit <0-99>
+    """
+
+    try:
+        user_limit = int(args)
+        print(user_limit)
+
+        if user_limit <= 99 and user_limit >= 0:
+            voice_state = ctx.author.voice
+
+            # Ensure user is in a voice channel
+            if voice_state:
+                await voice_state.channel.edit(user_limit=user_limit)
+
+        else:
+            raise ValueError
+
+    except ValueError:
+        raise UserError(
+            "This command requires a value of 0-99. Example: `!limit 10`")
+
+
 @BOT.event
 async def on_command_error(ctx, error):
     """
