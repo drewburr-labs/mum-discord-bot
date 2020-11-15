@@ -29,6 +29,7 @@ from discord.ext import commands
 from discord import utils
 import discord
 
+from src.common import Common
 import src.self_roles as self_roles
 import src.server_stats as server_stats
 import src.admin_logging as admin_logging
@@ -36,6 +37,8 @@ import src.server_rules as server_rules
 import src.new_member_logic as new_member_logic
 import io
 import asyncio
+
+Common = Common()
 
 
 class debug_logger:
@@ -82,20 +85,6 @@ BOT = commands.Bot(command_prefix=os.getenv('PREFIX'),
                    intents=intents, case_insensitive=True)
 
 
-# Define custom exception
-class UserError(discord.ext.commands.CommandError):
-    """
-    A command was run incorrectly, and the user should be told why.
-    Example: User executes a lobby-specific command in #general
-
-    Attributes:
-        message -- Error message to send to chat, as a reply.
-    """
-
-    def __init__(self, message):
-        self.message = message
-
-
 @BOT.event
 async def on_ready():
     """Produces log for when the bot is ready for action"""
@@ -126,40 +115,18 @@ async def on_voice_state_update(member, before, after):
                 # User has joined the seed channel. Create a new lobby.
                 await initialize_lobby(guild, seed_channel, member)
 
-            elif is_lobby(after.channel.category):
+            elif Common.is_lobby(after.channel.category):
                 # User is joining an existing lobby
                 await initialize_lobby_member(member, after.channel.category)
 
         # If user left a lobby
-        if before.channel is not None and is_lobby(before.channel.category):
+        if before.channel is not None and Common.is_lobby(before.channel.category):
             # Clear member's roles from last lobby
             await clear_member_lobby_overwrites(member, before.channel.category)
 
             # If the last lobby is empty, delete it
             if not before.channel.members:
                 await delete_lobby(before.channel.category)
-
-
-def is_lobby(category):
-    """
-    Returns True (bool) if a category is a lobby.
-    """
-
-    if category.name.endswith("Lobby"):
-        return True
-    else:
-        return False
-
-
-def ctx_is_lobby(ctx):
-    """
-    Checks if a message was sent from a lobby's text channel.
-    Raises UserError if channel is not a lobby.
-    """
-    if is_lobby(ctx.channel.category):
-        return True
-    else:
-        raise UserError('That command can only be used in a lobby.')
 
 
 async def initialize_lobby_member(member, category):
@@ -366,7 +333,7 @@ async def clear_member_lobby_overwrites(member, category):
 
 
 @BOT.command(name="code", aliases=["c"])
-@commands.check(ctx_is_lobby)
+@commands.check(Common.ctx_is_lobby)
 async def code(ctx, args=None):
 
     # Used to set a text-channel's name to the name of a game code. # May be removed
@@ -392,7 +359,7 @@ async def code(ctx, args=None):
         else:
             await ctx.send(f"{ctx.author.mention} The game code is `{ctx.channel.topic}`")
 
-    elif is_lobby(category) and args.isalpha() and len(args) == 6:
+    elif Common.is_lobby(category) and args.isalpha() and len(args) == 6:
         logger.info(f"Updating code for category: '{category}' - {args}")
         await ctx.send(f"{ctx.channel.mention} The game code is `{args}`")
 
@@ -404,20 +371,20 @@ async def code(ctx, args=None):
 
 @BOT.command(name="promote")
 @commands.has_permissions(manage_channels=True)
-@commands.check(ctx_is_lobby)
+@commands.check(Common.ctx_is_lobby)
 async def promote(ctx, user: discord.User):
     """
     Grants a user 'admin' access to a lobby. You must be a current lobby admin to use this command.
 
     Throws 'UserNotFound' if user does not exist. (Implemented in 1.5)
     """
-    if is_lobby(ctx.channel.category):
+    if Common.is_lobby(ctx.channel.category):
         await initialize_lobby_admin(user, ctx.channel.category)
         await ctx.send(f"{user.mention} has been promoted!")
 
 
 @BOT.command(name="votekick")
-@commands.check(ctx_is_lobby)
+@commands.check(Common.ctx_is_lobby)
 async def votekick(ctx, sus_member: discord.Member, *, reason):
     """
     Starts a vote to kick a member from a lobby.
@@ -579,7 +546,7 @@ async def votekick(ctx, sus_member: discord.Member, *, reason):
 
 
 @BOT.command(name="map")
-@commands.check(ctx_is_lobby)
+@commands.check(Common.ctx_is_lobby)
 async def map(ctx, args=None):
 
     maps_path = APP_DIR + '/maps/'
@@ -628,7 +595,7 @@ async def map(ctx, args=None):
 
 
 @BOT.command(name="mapvote")
-@commands.check(ctx_is_lobby)
+@commands.check(Common.ctx_is_lobby)
 async def mapvote(ctx, args=None):
     """
     Start a vote to select the next map to play.
@@ -677,8 +644,7 @@ async def mapvote(ctx, args=None):
 
 
 @BOT.command(name="rename")
-@commands.check(ctx_is_lobby)
-async def rename(ctx, *, args):
+@commands.check(Common.ctx_is_lobby)
     """
     Rename the current lobby.
     Usage: !rename <New name>
@@ -689,13 +655,12 @@ async def rename(ctx, *, args):
         category = ctx.channel.category
         await category.edit(name=f"{args} Lobby")
     else:
-        raise UserError(
+        raise Common.UserError(
             "This command requires an name. Ex: `!rename New lobby name`")
 
 
 @BOT.command(name="limit")
-@commands.check(ctx_is_lobby)
-async def limit(ctx, args):
+@commands.check(Common.ctx_is_lobby)
     """
     Change the lobby's user limit. Use '0' to remove the limit.
     Usage: !limit <0-99>
@@ -716,7 +681,7 @@ async def limit(ctx, args):
             raise ValueError
 
     except ValueError:
-        raise UserError(
+        raise Common.UserError(
             "This command requires a value of 0-99. Example: `!limit 10`")
 
 
@@ -730,12 +695,12 @@ async def on_command_error(ctx, error):
     if isinstance(error, commands.errors.MissingPermissions):
         logger.info(
             f'{ctx.author} attempted to run command: {ctx.message.content}')
-        if ctx_is_lobby(ctx):
+        if Common.ctx_is_lobby(ctx):
             await ctx.send(f'{ctx.author.mention} You do not have access to run this command.')
         else:
             # Delete unauthorized commands that come from outside a lobby
             await ctx.message.delete()
-    elif isinstance(error, UserError):
+    elif isinstance(error, Common.UserError):
         await ctx.send(f'{ctx.author.mention} {error.message}')
     # Implemented in 1.5
     # elif isinstance(error, commands.errors.UserNotFound):
