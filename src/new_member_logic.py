@@ -7,6 +7,7 @@ from dotenv import load_dotenv
 from discord.ext import tasks, commands
 from discord import utils
 import discord
+import asyncio
 
 
 class new_member_logic(commands.Cog):
@@ -32,8 +33,12 @@ class new_member_logic(commands.Cog):
         if message.channel is channel:
             if message.content.lower() == self.accept_msg.lower():
                 await message.author.add_roles(member_role)
+                self.logger.info(
+                    f"{message.author.name} has agreed to the rules.")
+                await message.author.send("Thank you for agreeing to the rules. We hope you enjoy the community!")
 
             if not message.embeds:
+                await asyncio.sleep(1)
                 await message.delete()
 
     @commands.command(name="refresh-start-here")
