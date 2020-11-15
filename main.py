@@ -645,6 +645,7 @@ async def mapvote(ctx, args=None):
 
 @BOT.command(name="rename")
 @commands.check(Common.ctx_is_lobby)
+async def rename(ctx, *, args=None):
     """
     Rename the current lobby.
     Usage: !rename <New name>
@@ -661,6 +662,7 @@ async def mapvote(ctx, args=None):
 
 @BOT.command(name="limit")
 @commands.check(Common.ctx_is_lobby)
+async def limit(ctx, args='None'):
     """
     Change the lobby's user limit. Use '0' to remove the limit.
     Usage: !limit <0-99>
@@ -668,7 +670,6 @@ async def mapvote(ctx, args=None):
 
     try:
         user_limit = int(args)
-        print(user_limit)
 
         if user_limit <= 99 and user_limit >= 0:
             voice_state = ctx.author.voice
