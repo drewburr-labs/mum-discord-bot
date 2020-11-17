@@ -686,7 +686,7 @@ async def limit(ctx, args='None'):
             "This command requires a value of 0-99. Example: `!limit 10`")
 
 
-@BOT.command(name="members")
+@BOT.command(name="members", aliases=["member"])
 async def members(ctx):
     """
     Prints the number of members in the member role.
@@ -694,12 +694,18 @@ async def members(ctx):
     role_name = "Member"
 
     role = utils.get(ctx.guild.roles, name=role_name)
+    member = ctx.author
+
+    if role in member.roles:
+        message = f'{member.mention} has agreed to the rules.'
+    else:
+        message = f'{member.mention} has not yet agreed to the rules.'
 
     member_count = len(role.members)
 
     embed_data = {
         "title": f'Member Role Total',
-        "description": f'{member_count} people have agreed to the rules.'
+        "description": f'{member_count} people have agreed to the rules.\n\n{message}'
     }
 
     embed = discord.Embed.from_dict(embed_data)
