@@ -686,6 +686,26 @@ async def limit(ctx, args='None'):
             "This command requires a value of 0-99. Example: `!limit 10`")
 
 
+@BOT.command(name="members")
+async def members(ctx):
+    """
+    Prints the number of members in the member role.
+    """
+    role_name = "Member"
+
+    role = utils.get(ctx.guild.roles, name=role_name)
+
+    member_count = len(role.members)
+
+    embed_data = {
+        "title": f'Member Role Total',
+        "description": f'{member_count} people have agreed to the rules.'
+    }
+
+    embed = discord.Embed.from_dict(embed_data)
+    await ctx.channel.send(embed=embed)
+
+
 @BOT.event
 async def on_command_error(ctx, error):
     """
