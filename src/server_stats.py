@@ -25,14 +25,17 @@ class server_stats(commands.Cog):
         """
         Executes all statistic update functions. Can only be a member of one guild.
         """
-        if len(self.bot.guilds) > 1:
-            self.logger.warning(
-                'Bot is a member of multiple guilds! Unable to update stats.')
-        else:
-            guild = self.bot.guilds[0]
+        guild = self.bot.guilds[0]
 
-        await self.update_member_count(guild)
-        self.logger.info('Server statistics have been updated.')
+        if len(self.bot.guilds) > 1:
+            error_msg = 'Bot is a member of multiple guilds! Unable to update stats.'
+            self.logger.warning(error_msg)
+
+            admin_logger = self.bot.get_cog('admin_logging')
+            admin_logger.bot_log(guild, error_msg)
+        else:
+            await self.update_member_count(guild)
+            self.logger.info('Server statistics have been updated.')
 
     @update_stats.before_loop
     async def wait_for_ready(self):
