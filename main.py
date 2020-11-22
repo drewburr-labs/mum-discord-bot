@@ -359,7 +359,7 @@ async def code(ctx, args=None):
         else:
             await ctx.send(f"{ctx.author.mention} The game code is `{ctx.channel.topic}`")
 
-    elif Common.is_lobby(category) and args.isalpha() and len(args) == 6:
+    elif Common.is_lobby(category):
         logger.info(f"Updating code for category: '{category}' - {args}")
         await ctx.send(f"{ctx.channel.mention} The game code is `{args}`")
 
