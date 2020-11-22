@@ -20,7 +20,7 @@ class admin_logging(commands.Cog):
     async def on_member_remove(self, member):
         channel = utils.get(
             member.guild.text_channels, name=self.leave_channel_name)
-        await channel.send(f"{member.name} has left the server.")
+        await channel.send(f"{member.display_name} ({member.name}#{member.discriminator}) has left the server.")
 
     async def bot_log(self, guild, msg=None, embed=None):
         """
