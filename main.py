@@ -141,25 +141,6 @@ async def initialize_lobby_member(member, category):
         await text_channel.set_permissions(member, read_messages=True)
 
 
-async def initialize_lobby_admin(member, category):
-    """
-    Grants a user 'admin' control over the current lobby.
-    Assumes the current lobby exists, and the member is still present in the lobby.
-    """
-
-    channels = category.channels
-
-    discord.PermissionOverwrite(
-        manage_channels=True, mute_members=True)
-
-    # Update user's permission overwrites
-    for channel in channels:
-        overwrite = channel.overwrites_for(member)
-        overwrite.update(manage_channels=True, mute_members=True)
-
-        await channel.set_permissions(member, overwrite=overwrite)
-
-
 async def initialize_lobby_text_channel(category):
     """
     Creates the text channel for a particular lobby.
@@ -274,9 +255,6 @@ async def initialize_lobby(guild, seed_channel, member):
     # Grant user default access to the lobby
     await initialize_lobby_member(member, category)
 
-    # Grant user "admin" access to the lobby
-    await initialize_lobby_admin(member, category)
-
     # Move the user to the lobby. Triggers 'on_voice_state_update'
     logger.info(
         f'Moving {member.display_name} to channel: {voice_channel.name}')
@@ -360,20 +338,6 @@ async def code(ctx, args=None):
 
     else:
         logger.info(f"Game code did not meet requirements: {args}")
-
-
-@BOT.command(name="promote")
-@commands.has_permissions(manage_channels=True)
-@commands.check(Common.ctx_is_lobby)
-async def promote(ctx, user: discord.User):
-    """
-    Grants a user 'admin' access to a lobby. You must be a current lobby admin to use this command.
-
-    Throws 'UserNotFound' if user does not exist. (Implemented in 1.5)
-    """
-    if Common.is_lobby(ctx.channel.category):
-        await initialize_lobby_admin(user, ctx.channel.category)
-        await ctx.send(f"{user.mention} has been promoted!")
 
 
 @BOT.command(name="votekick")
