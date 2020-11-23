@@ -10,6 +10,8 @@ import discord
 
 import asyncio
 
+from .common import Common
+
 
 class admin_commands(commands.Cog):
     def __init__(self, bot, logger):
@@ -19,7 +21,7 @@ class admin_commands(commands.Cog):
 
     @commands.has_role('Mod')
     @commands.command(name="softban")
-    async def ban(self, ctx, softban_member: discord.Member, *, reason):
+    async def ban(self, ctx, softban_member: discord.Member = None, *, reason=None):
         """
         Starts a vote to softban a user.
 
@@ -28,6 +30,10 @@ class admin_commands(commands.Cog):
         if ctx.message.channel.name != self.channel_name:
             await ctx.message.delete()
             raise Exception("Softban command was ran from an invalid channel.")
+
+        if not softban_member or not reason:
+            raise Common.UserError(
+                'Usage: `!softban drewburr for not being awesome.`')
 
         softban_role = 'Softban'
 
