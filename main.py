@@ -689,9 +689,8 @@ async def on_command_error(ctx, error):
             await ctx.message.delete()
     elif isinstance(error, Common.UserError):
         await ctx.send(f'{ctx.author.mention} {error.message}')
-    # Implemented in 1.5
-    # elif isinstance(error, commands.errors.UserNotFound):
-    #     await f'{ctx.author.mention} {error}'
+    elif isinstance(error, commands.errors.UserNotFound) or isinstance(error, commands.errors.MemberNotFound):
+        await ctx.send(f'{ctx.author.mention} {error}')
     else:
         logger.error(
             f'Unknown error. Invocation: {ctx.message.content}. \nError: {error}')
