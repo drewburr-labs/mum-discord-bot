@@ -25,6 +25,10 @@ class admin_commands(commands.Cog):
 
         Softbanned users are given the 'softban' role, and are muted and deafened.
         """
+        if ctx.message.channel.name != self.channel_name:
+            await ctx.message.delete()
+            raise Exception("Softban command was ran from an invalid channel.")
+
         softban_role = 'Softban'
 
         emoji_data = {
@@ -51,11 +55,17 @@ class admin_commands(commands.Cog):
         admin_logger = self.bot.get_cog('admin_logging')
         await admin_logger.bot_log(ctx.guild, f"{ctx.author.display_name} has initiated a vote to softban {softban_member.display_name}. Reason: {reason}.")
 
+        def approver_not_author(reaction, user):
+            if user.name is ctx.author.name:
+                return False
+
+            return True
+
         # Wait for the vote results
         reaction = None
         user = None
         try:
-            reaction, user = await self.bot.wait_for('reaction_add', timeout=600)
+            reaction, user = await self.bot.wait_for('reaction_add', check=approver_not_author, timeout=600)
         except asyncio.TimeoutError:
             await admin_logger.bot_log(ctx.guild, f"{softban_member.display_name} was not softbanned. Timed out.")
 
