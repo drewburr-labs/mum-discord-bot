@@ -41,6 +41,7 @@ class new_member_logic(commands.Cog):
                 await asyncio.sleep(1)
                 await message.delete()
 
+    @commands.has_role('Mod')
     @commands.command(name="refresh-start-here")
     async def refresh_channel(self, ctx):
         """

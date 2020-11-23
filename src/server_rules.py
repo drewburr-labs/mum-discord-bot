@@ -92,6 +92,7 @@ class server_rules(commands.Cog):
             }
         ]
 
+    @commands.has_role('Mod')
     @commands.command(name="refresh-rules")
     async def refresh_rules_channel(self, ctx):
         """

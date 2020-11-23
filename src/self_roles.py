@@ -90,7 +90,8 @@ class self_roles(commands.Cog):
         embed = discord.Embed.from_dict(embed_data)
         await ctx.channel.send(embed=embed)
 
-    @commands.command(name="refresh")
+    @commands.has_role('Mod')
+    @commands.command(name="refresh-self-roles")
     async def refresh_role_channel(self, ctx):
         """
         Sets up the roles channel to ensure the messages are up to date.
