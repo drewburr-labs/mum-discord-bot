@@ -56,7 +56,8 @@ class admin_commands(commands.Cog):
         await admin_logger.bot_log(ctx.guild, f"{ctx.author.display_name} has initiated a vote to softban {softban_member.display_name}. Reason: {reason}.")
 
         def approver_not_author(reaction, user):
-            if user.name is ctx.author.name:
+            # Also check the the user is not a bot
+            if user.name is ctx.author.name and not user.bot:
                 return False
 
             return True
