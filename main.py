@@ -594,7 +594,7 @@ async def map(ctx, args=None):
 @commands.check(Common.ctx_is_lobby)
 async def mapvote(ctx, args=None):
     """
-    Start a vote to select the next map to play.
+    Used to vote on which Among Us map to play.
     """
     votetime_min = 1
     emoji_map = {
