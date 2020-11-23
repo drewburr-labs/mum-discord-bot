@@ -17,20 +17,22 @@ class admin_commands(commands.Cog):
     def __init__(self, bot, logger):
         self.bot = bot
         self.logger = logger
-        self.channel_name = 'admin-commands'
+
+    def ctx_is_admin_commands(ctx):
+        if ctx.channel.name == 'admin-commands':
+            return True
+        else:
+            return False
 
     @commands.has_role('Mod')
     @commands.command(name="softban")
+    @commands.check(ctx_is_admin_commands)
     async def ban(self, ctx, softban_member: discord.Member = None, *, reason=None):
         """
         Starts a vote to softban a user.
 
         Softbanned users are given the 'softban' role, and are muted and deafened.
         """
-        if ctx.message.channel.name != self.channel_name:
-            await ctx.message.delete()
-            raise Exception("Softban command was ran from an invalid channel.")
-
         if not softban_member or not reason:
             raise Common.UserError(
                 'Usage: `!softban drewburr for not being awesome.`')
