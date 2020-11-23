@@ -19,9 +19,7 @@ Roles - language-specific filters (only German / only english)
 """
 
 import os
-import random
 import logging
-from datetime import datetime
 from systemd.journal import JournalHandler
 
 from dotenv import load_dotenv
@@ -37,8 +35,6 @@ import src.server_rules as server_rules
 import src.new_member_logic as new_member_logic
 import src.admin_commands as admin_commands
 import src.lobby_commands as lobby_commands
-import io
-import asyncio
 
 Common = Common()
 

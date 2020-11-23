@@ -3,10 +3,8 @@
 admin_logging is used to log messages that admins are interested in.
 """
 
-from dotenv import load_dotenv
 from discord.ext import commands
 from discord import utils
-import discord
 
 
 class admin_logging(commands.Cog):

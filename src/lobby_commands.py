@@ -3,7 +3,6 @@
 lobby_commands is used to provide all lobby commands.
 """
 
-from dotenv import load_dotenv
 from discord.ext import commands
 from discord import utils
 import discord

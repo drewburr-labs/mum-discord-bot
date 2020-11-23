@@ -3,7 +3,6 @@
 admin_commands is used to run all admin commands. These must be executed by a moderator.
 """
 
-from dotenv import load_dotenv
 from discord.ext import commands
 from discord import utils
 import discord

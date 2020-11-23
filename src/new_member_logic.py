@@ -3,8 +3,7 @@
 Handles processing of new members to ensure they agree to the rules and read initial server info.
 """
 
-from dotenv import load_dotenv
-from discord.ext import tasks, commands
+from discord.ext import commands
 from discord import utils
 import discord
 import asyncio

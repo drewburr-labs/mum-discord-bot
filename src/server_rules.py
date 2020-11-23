@@ -5,8 +5,7 @@ server_rules is used to push roles to the server.
 It's also responsible for assigning the Member role, which grants access to the server.
 """
 
-from dotenv import load_dotenv
-from discord.ext import tasks, commands
+from discord.ext import commands
 from discord import utils
 import discord
 

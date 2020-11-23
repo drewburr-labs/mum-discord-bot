@@ -7,10 +7,7 @@ There is a limit of 2 updates per 10 min for channel names/topics. For this reas
 Statistic channels are expected to be voice channels. Ideally, these would deny @everyone the connect permission
 """
 
-from dotenv import load_dotenv
 from discord.ext import tasks, commands
-from discord import utils
-import discord
 
 
 class server_stats(commands.Cog):

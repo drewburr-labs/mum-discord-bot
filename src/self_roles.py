@@ -5,7 +5,6 @@ self_roles is used to allow members to add or remove themselves from roles.
 This should be handled by a single message being in the 'self_roles' text channel, which will update roles based on reactions.
 """
 
-from dotenv import load_dotenv
 from discord.ext import commands
 from discord import utils
 import discord
