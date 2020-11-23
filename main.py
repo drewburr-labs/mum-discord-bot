@@ -541,6 +541,9 @@ async def votekick(ctx, sus_member: discord.Member, *, reason):
 @BOT.command(name="map")
 @commands.check(Common.ctx_is_lobby)
 async def map(ctx, args=None):
+    """
+    Used to get an Among Us map.
+    """
 
     maps_path = APP_DIR + '/maps/'
     maps = {
