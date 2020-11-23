@@ -35,6 +35,7 @@ import src.server_stats as server_stats
 import src.admin_logging as admin_logging
 import src.server_rules as server_rules
 import src.new_member_logic as new_member_logic
+import src.admin_commands as admin_commands
 import io
 import asyncio
 
@@ -742,5 +743,6 @@ server_stats.setup(BOT, logger)
 admin_logging.setup(BOT, logger)
 server_rules.setup(BOT, logger)
 new_member_logic.setup(BOT, logger)
+admin_commands.setup(BOT, logger)
 
 BOT.run(TOKEN)
