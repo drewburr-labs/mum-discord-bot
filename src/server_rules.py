@@ -8,6 +8,7 @@ It's also responsible for assigning the Member role, which grants access to the 
 from discord.ext import commands
 from discord import utils
 import discord
+import asyncio
 
 
 class server_rules(commands.Cog):
@@ -16,11 +17,13 @@ class server_rules(commands.Cog):
         self.logger = logger
         self.category = None  # The expected category for each stat channel
         self.channel_name = "rules"
+        self.member_role = "Member"
+        self.accept_msg = "I have read and accept the rules"
 
         self.rules_list = [
             {
                 "title": "Server Rules",
-                "description": "These rules are meant to serve as fallback resources for moderators. We trust the community, and will refer to these rules as guidelines unless escalation is required.",
+                "description": "Breaking the rules will result in a kick or ban. To accept the rules below, send 'I have read and accept the rules' to this channel.",
                 "fields":
                 [
                     {
@@ -34,61 +37,43 @@ class server_rules(commands.Cog):
                         "name": "Content",
                         "value": [
                             "- We do not allow NSFW content. Admins may call out an inappropriate topic, please respect this.",
-                            "- Spamming is not allowed, especially '@' spamming. No one wants to see that.",
-                            "- Self-advertising is not allowed without former permission."
+                            "- Spamming is not allowed. No one wants to see that.",
+                            "- Self-advertising is not allowed without former permission.",
+                            "- Posting links to streams and self-made content is welcome."
                         ]
                     },
                     {
                         "name": "Character",
                         "value": [
-                            "- Golden rule. Respect your fellow members."
+                            "- Golden rule. Respect your fellow members.",
+                            "- Do not shout at or insult members.",
+                            "- Comments that are racist, sexist, or hold prejudice will result in an immediate ban.",
+                            "- If you are asked to leave a lobby, do so kindly."
                         ]
                     },
                     {
                         "name": "Follow channel topics",
                         "value": [
                             "- Try to follow channel topics when possible.",
-                            "- Please keep server codes in the lobby text channels."
-                        ]
-                    },
-                    {
-                        "name": "Respect admins",
-                        "value": [
-                            "- If you are not an admin, do not be an admin.",
-                            "- If you have an issue with an admin, please DM drewburr."
-                        ]
-                    }
-                ]
-            },
-            {
-                "title": "Lobby Rules",
-                "description": "Server rules also apply to the Lobby rules. This is more or less the baseline of what can be expected from lobby members.",
-                "fields":
-                [
-                    {
-                        "name": "Respect your fellow players",
-                        "value": [
-                            "- Do not shout or insult members if you are killed or lose a game.",
-                            "- If you are asked to leave a lobby, do so kindly."
+                            "- Please keep game codes in the lobby text channels."
                         ]
                     },
                     {
                         "name": "Gameplay etiquette",
                         "value": [
-                            "- Don't shout or insult members if you are killed or lose a game.",
-                            "- If you are joining a new lobby, understand a game may already be in progress.",
-                            "- The crewmate who calls a meeting should be given speaking priority",
-                            "- Don't throw the game. (Exposing your fellow imposter(s), sharing information between rounds, talking when dead.)",
                             "- Don't stall the game because you're being salty.",
                             "- No hacking."
                         ]
                     },
                     {
-                        "name": "Game codes",
-                        "value": "- Please do not share game codes in #general. Every lobby has a text channel for this purpose."
-                    }
+                        "name": "Admins",
+                        "value": [
+                            "- If you are not an admin, do not be an admin.",
+                            "- If you have an issue with an admin, please DM drewburr."
+                        ]
+                    },
                 ]
-            }
+            },
         ]
 
     @commands.has_role('Mod')
@@ -102,13 +87,12 @@ class server_rules(commands.Cog):
             ctx.guild.text_channels, name=self.channel_name)
 
         if ctx.channel is rules_channel:
-            print("Updating rules")
+            self.logger.info("Updating rules")
             # Delete all messages in the channel
             await rules_channel.purge()
 
             # Publish new messages
             for data in self.rules_list:
-                print(data)
                 await self.send_rules_message(rules_channel, data)
 
     async def send_rules_message(self, channel, message_data):
@@ -126,6 +110,29 @@ class server_rules(commands.Cog):
 
         embed = discord.Embed.from_dict(message_data)
         await channel.send(embed=embed)
+
+    @commands.Cog.listener(name="on_message")
+    async def initialize_member(self, message):
+        """
+        Adds a user to the member_role
+
+        Role will only be assigned if message is {self.accept_msg}
+        Deletes all messages in {self.channel}
+        """
+        guild = message.guild
+        member_role = utils.get(guild.roles, name=self.member_role)
+        channel = utils.get(guild.text_channels, name=self.channel_name)
+
+        if message.channel is channel:
+            if message.content.lower() == self.accept_msg.lower():
+                await message.author.add_roles(member_role)
+                self.logger.info(
+                    f"{message.author.name} has agreed to the rules.")
+                await message.author.send("Thank you for agreeing to the rules. We hope you enjoy the community!")
+
+            if not message.embeds:
+                await asyncio.sleep(1)
+                await message.delete()
 
 
 def setup(bot, logger):
