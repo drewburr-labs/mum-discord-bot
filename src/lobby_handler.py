@@ -96,7 +96,7 @@ class server_stats(commands.Cog):
         """
         Creates the voice channel for a particular lobby.
 
-        Retuns the created voice channel.
+        Returns the created voice channel.
         """
         voice_channel_name = "voice chat"
 
