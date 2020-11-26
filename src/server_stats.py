@@ -45,7 +45,7 @@ class server_stats(commands.Cog):
         """
         Responsible for managing the member count statistic
         """
-        channel_prefix = 'Crewmates:'
+        channel_prefix = 'Members:'
 
         for channel in guild.voice_channels:
             if channel.category is self.category and channel.name.startswith(channel_prefix):
