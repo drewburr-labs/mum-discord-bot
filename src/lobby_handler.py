@@ -1,10 +1,6 @@
-# server_stats.py
+# lobby_handler.py
 """
-server_stats is used to update server statistics.
-
-There is a limit of 2 updates per 10 min for channel names/topics. For this reason, stats are updated every 10 minutes.
-
-Statistic channels are expected to be voice channels. Ideally, these would deny @everyone the connect permission
+Handler for automatically creating and deleting lobbies.
 """
 
 import discord
@@ -13,7 +9,7 @@ from discord.ext import commands
 from .common import Common
 
 
-class server_stats(commands.Cog):
+class lobby_handler(commands.Cog):
     def __init__(self, bot, logger):
         self.bot = bot
         self.logger = logger
@@ -232,4 +228,4 @@ class server_stats(commands.Cog):
 
 
 def setup(bot, logger):
-    bot.add_cog(server_stats(bot, logger))
+    bot.add_cog(lobby_handler(bot, logger))
