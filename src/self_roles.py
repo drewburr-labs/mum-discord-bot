@@ -16,8 +16,8 @@ class self_roles(commands.Cog):
         self.logger = logger
         self.channel_name = 'self-roles'
 
-        # title.reaction_map (set)
-        # title.description (str)
+        # title.reaction_map - set(emoji, role/description)
+        # title.description - str
         self.message_data = {
             'Color Roles': {
                 'reaction_map': (
