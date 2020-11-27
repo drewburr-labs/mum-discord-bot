@@ -35,14 +35,14 @@ class self_roles(commands.Cog):
                     ('crewmate_white', 'White'),
                     ('no', 'Remove Color')
                 ),
-                'description': 'Below is a list of colors that map to Crewmate colors! React to this message to be given the assigned color.'
+                'description': 'React to this message to be given the assigned color.'
             },
             'Game Roles': {
                 'reaction_map': (
                     ('crewmate_yellow', 'Crewmates'),
                     ('no', 'Remove role')
                 ),
-                'description': 'React to this message to be assigned the Crewmate role. This role can be pinged by members who are looking to create a game.'
+                'description': "React to this message to be assigned a game-specific role. This role can be pinged by members who are looking to create or organize games."
             }
         }
 
