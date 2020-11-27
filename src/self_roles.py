@@ -16,8 +16,8 @@ class self_roles(commands.Cog):
         self.logger = logger
         self.channel_name = 'self-roles'
 
-        # title.reaction_map (set)
-        # title.description (str)
+        # title.reaction_map - set(emoji, role/description)
+        # title.description - str
         self.message_data = {
             'Color Roles': {
                 'reaction_map': (
@@ -37,15 +37,7 @@ class self_roles(commands.Cog):
                 ),
                 'description': 'Below is a list of colors that map to Crewmate colors! React to this message to be given the assigned color.'
             },
-            'Region Roles': {
-                'reaction_map': (
-                    ('crewmate_purple', 'North America'),
-                    ('crewmate_pink', 'Europe'),
-                    ('crewmate_cyan', 'Asia')
-                ),
-                'description': 'Select a role to help lobbies determine which region to create games in.'
-            },
-            'Crewmates Role': {
+            'Game Roles': {
                 'reaction_map': (
                     ('crewmate_yellow', 'Crewmates'),
                     ('no', 'Remove role')
