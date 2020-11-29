@@ -97,7 +97,7 @@ class lobby_commands(commands.Cog):
                 fp = discord.File(image)
                 await ctx.send(file=fp)
                 self.logger.info(
-                    f'Uploaded map {map_image} for {user.display_name}.')
+                    f'Uploaded map {map_image} map.')
         except TypeError:
             pass
 
