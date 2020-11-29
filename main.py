@@ -37,6 +37,8 @@ import src.lobby_commands as lobby_commands
 import src.lobby_handler as lobby_handler
 import src.start_here as start_here
 
+Common = Common()
+
 
 class debug_logger:
     # Logger meant for debugging at the terminal.
@@ -80,9 +82,6 @@ intents.members = True
 
 BOT = commands.Bot(command_prefix=os.getenv('PREFIX'),
                    intents=intents, case_insensitive=True)
-
-Common = Common()
-Common.set_guild(BOT)
 
 
 @BOT.event

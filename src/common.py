@@ -7,12 +7,8 @@ import discord
 
 
 class Common():
-    def __init__(self, bot):
-        global guild
-
-    def set_guild(bot):
-        global guild
-        guild = bot.guilds[0]
+    def __init__(self):
+        pass
 
     # Define custom exception
     class UserError(discord.ext.commands.CommandError):
