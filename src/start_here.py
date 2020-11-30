@@ -48,6 +48,10 @@ class start_here(commands.Cog):
                         "value": f"This server is powered by our custom bot - {bot_user.mention}. If you ever need help, try using the `!help` command.\nNote: Some commands are context-sensitive. Try using `!help` in a lobby text-chat!"
                     },
                     {
+                        "name": "Join our Steam group",
+                        "value": "Find and play with members of the community by joining our Steam group\nhttps://steamcommunity.com/groups/CentralStation"
+                    },
+                    {
                         "name": "Self Roles",
                         "value": f"Check out the {self_roles.mention} channel to add yourself to pingable community roles, or change your color."
                     },
