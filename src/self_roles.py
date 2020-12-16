@@ -44,6 +44,7 @@ class self_roles(commands.Cog):
                     ('phasmo_p', 'Phasmophobia'),
                     ('rocket_league', 'Rocket League'),
                     ('wow_logo', 'World of Warcraft'),
+                    ('league_of_legends', 'League of Legends')
                 ),
                 'description': "React to this message to be assigned a game-specific role. These role can be pinged by members who are looking to create or organize games."
             }
