@@ -28,6 +28,8 @@ class start_here(commands.Cog):
             # Get channel info
             self_roles = utils.get(guild.text_channels, name="self-roles")
             rules = utils.get(guild.text_channels, name="rules")
+            introductions = utils.get(
+                guild.text_channels, name="introductions")
             bot_user = self.bot.user
 
             # Delete all messages in the channel
@@ -36,7 +38,7 @@ class start_here(commands.Cog):
             # Publish message
             embed_data = {
                 "title": f"Welcome to {ctx.guild.name}!",
-                "description": "We started as a community who played Among Us, and have grown into a group of friends who span many games and interests.",
+                "description": f"We started as a community who played Among Us, and have grown into a group of friends who span many games and interests. If you're new here, take a second to say hello in {introductions.mention}.",
                 "fields":
                 [
                     {
