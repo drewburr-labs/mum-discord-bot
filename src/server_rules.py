@@ -23,7 +23,7 @@ class server_rules(commands.Cog):
         self.rules_list = [
             {
                 "title": "Server Rules",
-                "description": "Breaking the rules will result in a kick or ban. To accept the rules below, send 'I have read and accept the rules' to this channel.",
+                "description": "Breaking the rules will result in a kick or ban. If you believe a member has broken one of these rules, please let a member of the Mod team know.",
                 "fields":
                 [
                     {
@@ -111,28 +111,12 @@ class server_rules(commands.Cog):
         embed = discord.Embed.from_dict(message_data)
         await channel.send(embed=embed)
 
-    @commands.Cog.listener(name="on_message")
-    async def initialize_member(self, message):
-        """
-        Adds a user to the member_role
-
-        Role will only be assigned if message is {self.accept_msg}
-        Deletes all messages in {self.channel}
-        """
-        guild = message.guild
-        member_role = utils.get(guild.roles, name=self.member_role)
-        channel = utils.get(guild.text_channels, name=self.channel_name)
-
-        if message.channel is channel:
-            if message.content.lower() == self.accept_msg.lower():
-                await message.author.add_roles(member_role)
-                self.logger.info(
-                    f"{message.author.name} has agreed to the rules.")
-                await message.author.send("Thank you for agreeing to the rules. We hope you enjoy the community!")
-
-            if not message.embeds:
-                await asyncio.sleep(1)
-                await message.delete()
+    # @commands.Cog.listener(name="on_member_update")
+    # async def on_member_update(self, before, after):
+    #     print(after)
+    #     print(before.pending, after.pending)
+    #     member_role = utils.get(member.guild.roles, name=self.member_role)
+    #     await member.add_roles(member_role)
 
 
 def setup(bot, logger):
