@@ -20,6 +20,7 @@ jobs:
         run: |
           python3 -m pip install --upgrade pip
           pip install 'pylint<=2.4.4'
+          pip install 'ansible<2.10'
 
       # - name: Install project dependencies
       #   run: |
