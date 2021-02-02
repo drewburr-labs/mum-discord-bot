@@ -21,6 +21,7 @@ jobs:
           python3 -m pip install --upgrade pip
           pip install 'pylint<=2.4.4'
           pip install 'ansible<2.10'
+          pip install 'sshpass'
 
       # - name: Install project dependencies
       #   run: |
