@@ -39,12 +39,11 @@ class self_roles(commands.Cog):
             'Game Roles': {
                 'reaction_map': (
                     ('crewmate_yellow', 'Among Us'),
-                    ('fall_guys_crown', 'Fall Guys'),
                     ('creeper_face', 'Minecraft'),
                     ('phasmo_p', 'Phasmophobia'),
                     ('rocket_league', 'Rocket League'),
-                    ('wow_logo', 'World of Warcraft'),
-                    ('league_of_legends', 'League of Legends')
+                    ('league_of_legends', 'League of Legends'),
+                    ('valheim_v', 'Valheim')
                 ),
                 'description': "React to this message to be assigned a game-specific role. These role can be pinged by members who are looking to create or organize games."
             }
