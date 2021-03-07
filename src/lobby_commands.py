@@ -49,58 +49,6 @@ class lobby_commands(commands.Cog):
         else:
             self.logger.info(f"Game code did not meet requirements: {args}")
 
-    @commands.command(name="map")
-    @commands.check(Common.ctx_is_lobby)
-    async def map(self, ctx, args=None):
-        """
-        Used to get an Among Us map.
-        """
-
-        maps_path = self._APP_DIR + '/maps/'
-        maps = {
-            'mira': 'Mira.png',
-            'polus': 'Polus.png',
-            'skeld': 'Skeld.jpg'
-        }
-        emoji_map = {
-            '🚀': 'skeld',
-            '✈️': 'mira',
-            '❄️': 'polus',
-        }
-        user = None  # Pylance (reportUnboundVariable)
-
-        # Create the request message
-        request_msg = 'Select a map by reacting to this message.'
-        for emoji, name in emoji_map.items():
-            request_msg += f'\n{emoji} - {name.capitalize()}'
-
-        if args is None:
-            message = await ctx.send(request_msg)
-            for emoji in emoji_map:
-                await message.add_reaction(emoji)
-
-            # Reaction must not be from the bot, message must be the one just sent, and emoji must be valid
-            def check(reaction, user):
-                return user != message.author and reaction.message.id == message.id and reaction.emoji in emoji_map
-
-            reaction, user = await self.bot.wait_for('reaction_add', check=check, timeout=60)
-            map_image = maps.get(emoji_map[reaction.emoji])
-        else:
-            map_image = maps.get(args.lower())
-            # Run the function again to print message
-            # Will throw a TypeError below
-            if map_image is None:
-                await map(ctx)
-
-        try:
-            with open(maps_path + map_image, 'rb') as image:
-                fp = discord.File(image)
-                await ctx.send(file=fp)
-                self.logger.info(
-                    f'Uploaded map: {map_image}.')
-        except TypeError:
-            pass
-
     @commands.command(name="mapvote")
     @commands.check(Common.ctx_is_lobby)
     async def mapvote(self, ctx, args=None):
