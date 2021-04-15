@@ -29,7 +29,6 @@ import discord
 
 from src.common import Common
 import src.self_roles as self_roles
-import src.server_stats as server_stats
 import src.admin_logging as admin_logging
 import src.server_rules as server_rules
 import src.admin_commands as admin_commands
