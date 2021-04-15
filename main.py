@@ -115,7 +115,6 @@ async def on_command_error(ctx, error):
 
 # Import custom cogs
 self_roles.setup(BOT, logger)
-server_stats.setup(BOT, logger)
 admin_logging.setup(BOT, logger)
 server_rules.setup(BOT, logger)
 admin_commands.setup(BOT, logger)
