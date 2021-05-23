@@ -43,7 +43,7 @@ class start_here(commands.Cog):
                 [
                     {
                         "name": "Creating voice channels",
-                        "value": f"Create new voice channels by joining the **Create New Lobby** voice channel. Each lobby comes with a private text-chat, that only the voice channel can see."
+                        "value": f"Create new voice channels by joining the **Create New Lobby** voice channel. Each lobby comes with a private text-chat, that only the voice channel members can see."
                     },
                     {
                         "name": "Say hi to Mum!",
@@ -59,7 +59,7 @@ class start_here(commands.Cog):
                     },
                     {
                         "name": "Agree to the Rules",
-                        "value": f"Read through the rules {rules.mention} to get access to the rest of the server. These are expectations that apply to all members, including mods."
+                        "value": f"Read through the {rules.mention} to get familiar with how we run things here. These are expectations that apply to all members, including mods."
                     },
                 ]
             }
