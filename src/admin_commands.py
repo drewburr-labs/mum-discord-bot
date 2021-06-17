@@ -24,6 +24,25 @@ class admin_commands(commands.Cog):
             return False
 
     @commands.has_role('Mod')
+    @commands.command(name="member_roles")
+    async def member_roles(self, ctx):
+        """
+        Ensures all server members have the Member role
+        """
+        member_role_name = 'Member'
+        member_role = utils.get(ctx.guild.roles, name=member_role_name)
+
+        total_changes = 0
+
+        for member in ctx.guild.members:
+            if member_role not in member.roles and not member.bot:
+                await member.add_roles(member_role)
+                total_changes += 1
+
+        await ctx.send(f'Added the `{member_role_name}` role to {total_changes} members.')
+
+
+    @commands.has_role('Mod')
     @commands.command(name="softban")
     @commands.check(ctx_is_admin_commands)
     async def softban(self, ctx, softban_member: discord.Member = None, *, reason=None):
