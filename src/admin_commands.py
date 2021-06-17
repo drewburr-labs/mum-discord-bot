@@ -26,7 +26,7 @@ class admin_commands(commands.Cog):
     @commands.has_role('Mod')
     @commands.command(name="softban")
     @commands.check(ctx_is_admin_commands)
-    async def ban(self, ctx, softban_member: discord.Member = None, *, reason=None):
+    async def softban(self, ctx, softban_member: discord.Member = None, *, reason=None):
         """
         Starts a vote to softban a user.
 
