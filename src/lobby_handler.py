@@ -223,9 +223,6 @@ class lobby_handler(commands.Cog):
         for channel in channels:
             await channel.set_permissions(member, overwrite=overwrite)
 
-        # Remove the lobby permission overwrites
-        await category.set_permissions(member, overwrite=overwrite)
-
 
 def setup(bot, logger):
     bot.add_cog(lobby_handler(bot, logger))
