@@ -88,6 +88,11 @@ async def on_ready():
     """Produces log for when the bot is ready for action"""
     logger.info(f'{BOT.user.name} has connected to Discord!')
 
+    admin_logger = BOT.get_cog('admin_logging')
+
+    for guild in BOT.guilds:
+        await admin_logger.bot_log(guild, f"{BOT.user.name} has reconnected!")
+
 
 @BOT.event
 async def on_command_error(ctx, error):
