@@ -35,6 +35,7 @@ import src.admin_commands as admin_commands
 import src.lobby_commands as lobby_commands
 import src.lobby_handler as lobby_handler
 import src.start_here as start_here
+import src.global_commands as global_commands
 
 Common = Common()
 
@@ -125,5 +126,6 @@ admin_commands.setup(BOT, logger)
 lobby_commands.setup(BOT, logger, APP_DIR)
 lobby_handler.setup(BOT, logger)
 start_here.setup(BOT, logger)
+global_commands.setup(BOT, logger)
 
 BOT.run(TOKEN)
