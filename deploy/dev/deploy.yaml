@@ -23,7 +23,7 @@ spec:
             - name: DISCORD_TOKEN
               valueFrom:
                 secretKeyRef:
-                  name: discord_token
+                  name: discord-token
                   key: DISCORD_TOKEN
       imagePullSecrets:
         - name: regcred
