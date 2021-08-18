@@ -18,7 +18,7 @@ spec:
     spec:
       containers:
         - name: discord-bot
-          image: discord-bot:dev
+          image: drewburr/centralstation-bot:dev
           env:
             - name: DISCORD_TOKEN
               valueFrom:
