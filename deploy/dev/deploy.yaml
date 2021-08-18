@@ -3,6 +3,7 @@ apiVersion: apps/v1
 kind: Deployment
 metadata:
   name: bot-deployment
+  namespace: centralstation-bot-dev
   labels:
     app: discord-bot
 spec:
@@ -18,3 +19,11 @@ spec:
       containers:
         - name: discord-bot
           image: discord-bot:dev
+          env:
+            - name: DISCORD_TOKEN
+              valueFrom:
+                secretKeyRef:
+                  name: discord_token
+                  key: DISCORD_TOKEN
+      imagePullSecrets:
+        - name: regcred
