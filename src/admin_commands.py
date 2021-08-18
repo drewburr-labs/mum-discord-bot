@@ -41,7 +41,6 @@ class admin_commands(commands.Cog):
 
         await ctx.send(f'Added the `{member_role_name}` role to {total_changes} members.')
 
-
     @commands.has_role('Mod')
     @commands.command(name="softban")
     @commands.check(ctx_is_admin_commands)
