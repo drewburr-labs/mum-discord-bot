@@ -20,7 +20,7 @@ Roles - language-specific filters (only German / only english)
 
 import os
 import logging
-from systemd.journal import JournalHandler
+# from systemd.journal import JournalHandler
 
 from dotenv import load_dotenv
 from discord.ext import commands
@@ -61,18 +61,12 @@ class debug_logger:
 
 # Setup logger object
 logger = logging.getLogger(__name__)
-journald_handler = JournalHandler()
-journald_handler.setFormatter(
-    logging.Formatter('[%(levelname)s] %(message)s'))
-logger.addHandler(journald_handler)
-logger.setLevel(logging.DEBUG)
-
 debug_handler = debug_logger()
 logger.addHandler(debug_handler)
 
 # Setup bot variables
-load_dotenv()
-APP_DIR = os.getenv('APP_DIR')
+PREFIX = '!'
+APP_DIR = os.getenv('PWD')  # Given by Docker
 TOKEN = os.getenv('DISCORD_TOKEN')
 
 # Setup intents
@@ -80,7 +74,7 @@ TOKEN = os.getenv('DISCORD_TOKEN')
 intents = discord.Intents.default()
 intents.members = True
 
-BOT = commands.Bot(command_prefix=os.getenv('PREFIX'),
+BOT = commands.Bot(command_prefix=PREFIX,
                    intents=intents, case_insensitive=True)
 
 

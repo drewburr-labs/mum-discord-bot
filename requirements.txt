@@ -1,4 +1,3 @@
+# To ensure app dependencies are ported from your virtual environment/host machine into your container, run 'pip freeze > requirements.txt' in the terminal to overwrite this file
 discord.py==1.6.0
 python-dotenv<=0.11.0
-systemd-python<=234
-psycopg2-binary<=2.8.5
