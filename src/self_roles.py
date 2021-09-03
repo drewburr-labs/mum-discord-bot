@@ -44,7 +44,8 @@ class self_roles(commands.Cog):
                     ('rocket_league', 'Rocket League'),
                     ('league_of_legends', 'League of Legends'),
                     ('valheim_v', 'Valheim'),
-                    ('ghost', 'Call of Duty')
+                    ('ghost', 'Call of Duty'),
+                    ('destiny', 'Destiny')
                 ),
                 'description': "React to this message to be assigned a game-specific role. These role can be pinged by members who are looking to create or organize games."
             }
