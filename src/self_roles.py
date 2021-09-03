@@ -42,8 +42,6 @@ class self_roles(commands.Cog):
                     ('creeper_face', 'Minecraft'),
                     ('phasmo_p', 'Phasmophobia'),
                     ('rocket_league', 'Rocket League'),
-                    ('league_of_legends', 'League of Legends'),
-                    ('valheim_v', 'Valheim'),
                     ('ghost', 'Call of Duty'),
                     ('destiny', 'Destiny')
                 ),
