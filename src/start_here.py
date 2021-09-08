@@ -37,11 +37,6 @@ class start_here(commands.Cog):
             # Delete all messages in the channel
             await channel.purge()
 
-            self.logger.info(f"self-roles: {self-roles}")
-            self.logger.info(f"rules: {rules}")
-            self.logger.info(f"general: {general}")
-            self.logger.info(f"new-members: {new-members}")
-
             # Publish message
             embed_data = {
                 "title": f"Welcome to {ctx.guild.name}!",
