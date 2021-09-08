@@ -39,7 +39,7 @@ class start_here(commands.Cog):
 
             self.logger.info(f"self-roles: {self-roles}")
             self.logger.info(f"rules: {rules}")
-            self.logger.info(f"general: {}")
+            self.logger.info(f"general: {general}")
             self.logger.info(f"new-members: {new-members}")
 
             # Publish message
