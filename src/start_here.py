@@ -28,8 +28,10 @@ class start_here(commands.Cog):
             # Get channel info
             self_roles = utils.get(guild.text_channels, name="self-roles")
             rules = utils.get(guild.text_channels, name="rules")
-            introductions = utils.get(
-                guild.text_channels, name="introductions")
+            general = utils.get(
+                guild.text_channels, name="general")
+            new_members = utils.get(
+                guild.text_channels, name="new_members")
             bot_user = self.bot.user
 
             # Delete all messages in the channel
@@ -38,16 +40,16 @@ class start_here(commands.Cog):
             # Publish message
             embed_data = {
                 "title": f"Welcome to {ctx.guild.name}!",
-                "description": f"We started as a community who played Among Us, and have grown into a group of friends who span many games and interests. If you're new here, take a second to say hello in {introductions.mention}.",
+                "description": f"We started as a community who played Among Us, and have grown into a group of friends who span many games and interests. If you're new here, take a second to say hello in {new_members.mention} or {general.mention}.",
                 "fields":
                 [
                     {
                         "name": "Creating voice channels",
-                        "value": f"Create new voice channels by joining the **Create New Lobby** voice channel. Each lobby comes with a private text-chat, that only the voice channel members can see."
+                        "value": f"Create new voice channels by joining the **Create New Lobby** voice channel. Each lobby comes with a private text chat, which only the voice channel members can see. This is a great place for game codes and invite links."
                     },
                     {
                         "name": "Say hi to Mum!",
-                        "value": f"This server is powered by our custom bot - {bot_user.mention}. If you ever need help, try using the `!help` command.\nNote: Some commands are context-sensitive. Try using `!help` in a lobby text-chat!"
+                        "value": f"This server is powered by our custom bot - {bot_user.mention}! If you ever need help, try using the `!help` command.\nNote: Some commands are context-sensitive. Try using `!help` in a lobby text-chat to see what changes!"
                     },
                     {
                         "name": "Join our Steam group",
