@@ -31,7 +31,7 @@ class start_here(commands.Cog):
             general = utils.get(
                 guild.text_channels, name="general")
             new_members = utils.get(
-                guild.text_channels, name="new_members")
+                guild.text_channels, name="new-members")
             bot_user = self.bot.user
 
             # Delete all messages in the channel
