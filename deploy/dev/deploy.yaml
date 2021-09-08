@@ -25,5 +25,6 @@ spec:
                 secretKeyRef:
                   name: discord-token
                   key: DISCORD_TOKEN
+          imagePullPolicy: Always
       imagePullSecrets:
         - name: regcred
