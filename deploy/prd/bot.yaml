@@ -3,7 +3,7 @@ apiVersion: apps/v1
 kind: Deployment
 metadata:
   name: bot-deployment
-  namespace: centralstation-bot-prd
+  namespace: central-station-prd
   labels:
     app: discord-bot
 spec:
