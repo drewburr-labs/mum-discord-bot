@@ -3,9 +3,6 @@ apiVersion: apps/v1
 kind: Deployment
 metadata:
   name: bot-deployment
-  namespace: central-station-dev
-  labels:
-    app: discord-bot
 spec:
   replicas: 1
   selector:
@@ -18,13 +15,12 @@ spec:
     spec:
       containers:
         - name: discord-bot
-          image: drewburr/centralstation-bot:master
+          image: drewburr/centralstation-bot:v1.0.1
           env:
             - name: DISCORD_TOKEN
               valueFrom:
                 secretKeyRef:
                   name: discord-token
                   key: DISCORD_TOKEN
-          imagePullPolicy: Always
       imagePullSecrets:
         - name: regcred

@@ -1,0 +1,16 @@
+apiVersion: bitnami.com/v1alpha1
+kind: SealedSecret
+metadata:
+  creationTimestamp: null
+  name: regcred
+  namespace: kube-system
+spec:
+  encryptedData:
+    config.json: AgBP7Umw5kgZcyaC/8mZ9JHICynAKExP8b8HwVymmD4Vcpl53t478FWh+O6IGN8rhPLA93xaObvPCsUoMBXn48dnmHvZzMfJxNRz+E57Q3zyjK2K+cxLO4vITCeAImJMGlB0Oevqhtv9CfKsSOWje/Q/7PP0HQh+p0oZy7Fa4ojfmYZW59PRU6ig2lfYzvVtXBzeuf+/i18Jw2BMDUIo3OpicyExsXUB13uz6/cMX+vDnAUmaddnEDaQiwnVBe8lR5cuVP86cyKTvVdweqRPn3WP705OgjaTZ0UpJ9ZxjOo4+giCcP0Z2QxzK2qokcAozKLV/mqYDTua70lYcjJrj/VzK/g29FZd8qUofKqJ/g7QjAvZI7ybDSw7uXnymHyCu6olQ0Cgn05cGMJvqmYL3iKiVCHLWw7rWR3w+G2NqoOyauhiK7nx0XONbGJ1F9/Kpe7NkPYuILUInM9K8QvwI21JjBlYa3ONDVCCRCvwWHADgqBauQS2is/O7d/ESjhT21++ZEfyhEjwsVPDwMiR50ZDrHJb60D9kiFtWzvUwFu9yhRHLaRAe0DkSLITNzHOh0kaadizQHWumd/PsOXD8/6KkNOJ2eO2yBJpld+3RdLhbH1vpmnFpARg9TwN4dbrdySoJm56mclxKoglpli3Abbi6KTpnQ7mJcP8QCnjX600wpFmgRim645O+EZEU99Tx0CwmGMnrKSKQ8JdtHGG6qHN9tBjTh6IEK5UOmgAJypI/Kad5dRaT/LIT3oLOnnVOc/pmWc5YgPWo3AOEdyubZyj5l4Tps4+XhdeiQ+wJB4UkE8TTHrtuj027SWSaMDeUaPvlNDj5aETvsMpklmSF7k=
+  template:
+    data: null
+    metadata:
+      creationTimestamp: null
+      name: regcred
+      namespace: kube-system
+

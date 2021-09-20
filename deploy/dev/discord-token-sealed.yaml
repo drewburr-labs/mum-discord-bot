@@ -1,0 +1,16 @@
+apiVersion: bitnami.com/v1alpha1
+kind: SealedSecret
+metadata:
+  creationTimestamp: null
+  name: discord-token
+  namespace: central-station-dev
+spec:
+  encryptedData:
+    DISCORD_TOKEN: AgARrVRMFOxR771Qr+Chpwv8hd3/mat8qqPlSzMjZG4QfvpTYpiOcAVYaQDMjruMvnLItRxJyZIvDJ/Xado+LcAcUihx08+8nYoP05qxGIB7HARuZh3QGIHxfJX5KHju0tXUdI9auDswSrHYQZfMjH5BNFpHluqdLbX1gK17p3jn++mUpSJXy7OrqkkYaW10rw826TnpkdPq0UrcMWboycOQqMSPbTZW9EVxnYuqNyn4inSdMHTWeSh1/7t6GZ+is9K6k1t4gGTvP+sI2u6ebMp+FiL0ht9HwoomoGY/aIwlcunAvpB6itvdTviDq8SZTZoyjq1SA4yKCABmNmw36gTSczdRevDEvV4bD3B6ZtTQ+XUFhnYeq2JbwVhtkCRux4+MWlR3AE1xxr3rlbdGCAZXk0DeEcqXdyVOV9G7jjNMVgjbZoP0eue4iOEvToxy+ExMkh6eBCBMKep1iWffJSItiiQUKqsBiaUFdoh7Ai1oBP2I5sZm+3ZCIvtYd/wi64YAG9z3V6/YhdwxOGDqiKhIfUMeEEeUf9dOUkpTJ+2bFwqo+g07RzL6G+RYY8yBWbI27gjg33PcvyLaTPUlT+Tx8P+nOCzFMbz+bbBOeqWb4aSm2a3tDlNGcPJFreeUoLq6liTUay0E012LnsZIq2TpSeveeUtwNCm+3CIkvsuH/xWLOaWg+kyeEYbxNNqZvobFSSTD8jsfWLS3PtnDJwghmVNd+rE9cbppQLEeHSvXTGVPtiF0IpRx4umPEZZVMAWhw0Mvza7kZcLX8A==
+  template:
+    data: null
+    metadata:
+      creationTimestamp: null
+      name: discord-token
+      namespace: central-station-dev
+

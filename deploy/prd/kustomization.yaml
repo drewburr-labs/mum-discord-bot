@@ -1,0 +1,7 @@
+---
+bases:
+  - ../base
+resources:
+  - discord-token-sealed.yaml
+patchesStrategicMerge:
+  - bot.yaml

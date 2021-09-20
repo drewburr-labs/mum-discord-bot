@@ -8,4 +8,4 @@ spec:
     spec:
       containers:
         - name: discord-bot
-          image: drewburr/centralstation-bot:v1.0.1
+          image: drewburr/centralstation-bot:master
