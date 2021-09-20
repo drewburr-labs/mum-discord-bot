@@ -9,3 +9,4 @@ spec:
       containers:
         - name: discord-bot
           image: drewburr/centralstation-bot:master
+      imagePullPolicy: Always
