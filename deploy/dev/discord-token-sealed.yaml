@@ -13,4 +13,3 @@ spec:
       creationTimestamp: null
       name: discord-token
       namespace: central-station-dev
-

@@ -1,4 +1,3 @@
 ---
 resources:
-  - regcred-sealed.yaml
   - bot.yaml
