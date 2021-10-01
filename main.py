@@ -1,22 +1,5 @@
 # bot-main.py
-""" discord-among-us
-
-This bot is meant to handle a private Among Us game, with several dozen running concurrently.
-
-I like the idea of making this stateless, so no database needed here. Everything should be stored in Discord.
-
-I'm thinking about setting this up so there's a text channel created for every voice channel, and is private for that voice channel (i.e. no one else can see it)
-
-The main purpose here is to allow for a party to join a group, join their private match via the game code (shared through a text channel) and play with voice chat.
-
-Things like setting player limits and creating an auto-join system with categories will come later. Maybe you want 5-6 friends to play together, or only want to join non-nsfw channels.
-
-Thoughts on the auto join system:
-Creating private lobbies
-Roles - language-specific filters (only German / only english)
-
-
-"""
+""" centralstation-bot"""
 
 import os
 import logging
