@@ -2,9 +2,6 @@
 
 NAME='discord_bot_local'
 
-echo 'Cleaning up existing container(s)...'
-docker rm $NAME
-
 echo 'Sourcing local env...'
 source .env
 
