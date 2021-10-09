@@ -97,6 +97,7 @@ class self_roles(commands.Cog):
                         self.logger.info(
                             f'Added {member.name} to role: {new_role.name}')
                     else:
+                        # Deletes the emoji if the role does not exist
                         existing_reaction = [
                             reaction for reaction in message.reactions if str(reaction.emoji) == str(emoji)]
 
