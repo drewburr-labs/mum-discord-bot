@@ -24,7 +24,7 @@ class admin_commands(commands.Cog):
             return False
 
     @commands.has_role('Mod')
-    @commands.command(name="member_roles")
+    @commands.command(name="member-roles")
     async def member_roles(self, ctx):
         """
         Ensures all server members have the Member role
