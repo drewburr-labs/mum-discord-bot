@@ -192,8 +192,10 @@ class self_roles(commands.Cog):
                     emoji_name = item[0]
                     role_name = item[1]
                     emoji = utils.get(ctx.guild.emojis, name=emoji_name)
-
-                    emoji_data[role_name] = emoji
+                    if emoji:
+                        emoji_data[role_name] = emoji
+                    else:
+                        self.logger.warn(f"Error fetching emoji: {emoji_name}")
 
                 # Setup embed message
                 message_text = ""
