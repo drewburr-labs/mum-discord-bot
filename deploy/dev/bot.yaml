@@ -7,6 +7,6 @@ spec:
   template:
     spec:
       containers:
-        - name: discord-bot
+        - name: centralstation-bot
           image: drewburr/centralstation-bot:master
           imagePullPolicy: Always
