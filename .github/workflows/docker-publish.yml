@@ -7,6 +7,12 @@ on:
     branches: [master]
     # Publish semver tags as releases.
     tags: ["v*.*.*"]
+    paths-ignore:
+      - deploy/
+      - .github/
+      - .vscode/
+      - README.md
+      - test.sh
   pull_request:
     branches: [master]
 
