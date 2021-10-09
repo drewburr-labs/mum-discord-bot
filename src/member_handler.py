@@ -1,2 +1,2 @@
-# https://discordpy.readthedocs.io/en/latest/api.html#discord.on_member_update
-# https://discordpy.readthedocs.io/en/latest/api.html#discord.Member.pending
+# https://disnake.readthedocs.io/en/latest/api.html#disnake.on_member_update
+# https://disnake.readthedocs.io/en/latest/api.html#disnake.Member.pending

@@ -3,9 +3,9 @@
 admin_commands is used to run all admin commands. These must be executed by a moderator.
 """
 
-from discord.ext import commands
-from discord import utils
-import discord
+from disnake.ext import commands
+from disnake import utils
+import disnake
 
 import asyncio
 
@@ -44,7 +44,7 @@ class admin_commands(commands.Cog):
     @commands.has_role('Mod')
     @commands.command(name="softban")
     @commands.check(ctx_is_admin_commands)
-    async def softban(self, ctx, softban_member: discord.Member = None, *, reason=None):
+    async def softban(self, ctx, softban_member: disnake.Member = None, *, reason=None):
         """
         Starts a vote to softban a user.
 
@@ -71,7 +71,7 @@ class admin_commands(commands.Cog):
             emoji = utils.get(ctx.guild.emojis, name=name)
             emoji_data[name] = emoji
 
-        embed = discord.Embed.from_dict(embed_data)
+        embed = disnake.Embed.from_dict(embed_data)
         message = await ctx.channel.send(embed=embed)
 
         for emoji in emoji_data.values():

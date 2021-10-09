@@ -3,9 +3,9 @@
 Handler for automatically creating and deleting lobbies.
 """
 
-import discord
-from discord import utils
-from discord.ext import commands
+import disnake
+from disnake import utils
+from disnake.ext import commands
 from .common import Common
 
 
@@ -74,7 +74,7 @@ class lobby_handler(commands.Cog):
         text_channel_name = "text-chat"
 
         # Setup overwrites
-        default_overwrite = discord.PermissionOverwrite(read_messages=False)
+        default_overwrite = disnake.PermissionOverwrite(read_messages=False)
 
         overwrites = {
             # Text channels are invisible by default
@@ -111,7 +111,7 @@ class lobby_handler(commands.Cog):
         # text_channel = utils.get(ctx.guild.text_channels, name='general')
         prefix = self.bot.command_prefix
 
-        # https://discordpy.readthedocs.io/en/latest/api.html#embed
+        # https://disnake.readthedocs.io/en/latest/api.html#embed
         embed_data = {
             "title": "Welcome to the lobby!",
             "description": "Here's some tips to get you started",
@@ -144,7 +144,7 @@ class lobby_handler(commands.Cog):
             ]
         }
 
-        embed = discord.Embed.from_dict(embed_data)
+        embed = disnake.Embed.from_dict(embed_data)
 
         await text_channel.send(embed=embed)
 
@@ -217,7 +217,7 @@ class lobby_handler(commands.Cog):
 
         channels = category.channels
 
-        overwrite = discord.PermissionOverwrite()
+        overwrite = disnake.PermissionOverwrite()
 
         # Remove all channel permission overwrites
         for channel in channels:

@@ -3,9 +3,9 @@
 lobby_commands is used to provide all lobby commands.
 """
 
-from discord.ext import commands
-from discord import utils
-import discord
+from disnake.ext import commands
+from disnake import utils
+import disnake
 
 import asyncio
 
@@ -73,7 +73,7 @@ class lobby_commands(commands.Cog):
 
         await asyncio.sleep(votetime_min * 60)
 
-        cache_message = discord.utils.get(
+        cache_message = disnake.utils.get(
             ctx.bot.cached_messages, id=message.id)
 
         votes = dict()
@@ -94,7 +94,7 @@ class lobby_commands(commands.Cog):
             'description': description
         }
 
-        embed = discord.Embed.from_dict(embed_data)
+        embed = disnake.Embed.from_dict(embed_data)
         await ctx.channel.send(embed=embed)
 
     @commands.command(name="rename")
@@ -140,7 +140,7 @@ class lobby_commands(commands.Cog):
 
     @commands.command(name="votekick")
     @commands.check(Common.ctx_is_lobby)
-    async def votekick(self, ctx, sus_member: discord.Member, *, reason):
+    async def votekick(self, ctx, sus_member: disnake.Member, *, reason):
         """
         Starts a vote to kick a member from a lobby.
 
@@ -184,7 +184,7 @@ class lobby_commands(commands.Cog):
             emoji = utils.get(ctx.guild.emojis, name=name)
             emoji_data[name] = emoji
 
-        embed = discord.Embed.from_dict(embed_data)
+        embed = disnake.Embed.from_dict(embed_data)
         message = await ctx.channel.send(embed=embed)
 
         admin_logger = self.bot.get_cog('admin_logging')
@@ -203,7 +203,7 @@ class lobby_commands(commands.Cog):
             """
             nonlocal yes_count
             if user != message.author and reaction.message.id == message.id and reaction.emoji is emoji_data['yes']:
-                cache_message = discord.utils.get(
+                cache_message = disnake.utils.get(
                     ctx.bot.cached_messages, id=message.id)
                 reactions = cache_message.reactions
 
@@ -231,7 +231,7 @@ class lobby_commands(commands.Cog):
             await sus_member.move_to(ctx.guild.afk_channel, reason="Kicked from Lobby")
 
             # Update user's permission overwrites
-            overwrite = discord.PermissionOverwrite(connect=False)
+            overwrite = disnake.PermissionOverwrite(connect=False)
 
             # Execute this to ensure there's enough time before updating permissions
             await asyncio.sleep(1)
@@ -239,7 +239,7 @@ class lobby_commands(commands.Cog):
             await voice_channel.set_permissions(sus_member, overwrite=overwrite)
 
         # Cache the current state of the message
-        cache_message = discord.utils.get(
+        cache_message = disnake.utils.get(
             ctx.bot.cached_messages, id=message.id)
 
         reactions = cache_message.reactions
@@ -295,7 +295,7 @@ class lobby_commands(commands.Cog):
             ]
         }
 
-        log_embed = discord.Embed.from_dict(log_embed_data)
+        log_embed = disnake.Embed.from_dict(log_embed_data)
 
         await admin_logger.bot_log(ctx.guild, embed=log_embed)
 

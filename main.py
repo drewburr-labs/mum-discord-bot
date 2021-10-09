@@ -6,9 +6,9 @@ import logging
 # from systemd.journal import JournalHandler
 
 from dotenv import load_dotenv
-from discord.ext import commands
-from discord import utils
-import discord
+from disnake.ext import commands
+from disnake import utils
+import disnake
 
 from src.common import Common
 import src.self_roles as self_roles
@@ -53,8 +53,8 @@ APP_DIR = os.getenv('PWD')  # Given by Docker
 TOKEN = os.getenv('DISCORD_TOKEN')
 
 # Setup intents
-# https://discordpy.readthedocs.io/en/latest/api.html?highlight=intents#discord.Intents.default
-intents = discord.Intents.default()
+# https://disnake.readthedocs.io/en/latest/api.html?highlight=intents#discord.Intents.default
+intents = disnake.Intents.default()
 intents.members = True
 
 BOT = commands.Bot(command_prefix=PREFIX,
@@ -76,8 +76,8 @@ async def on_ready():
 async def on_command_error(ctx, error):
     """
     Core error handler
-    https://discordpy.readthedocs.io/en/latest/ext/commands/api.html?highlight=commands%20check#discord.ext.commands.check
-    https://discordpy.readthedocs.io/en/latest/ext/commands/api.html?highlight=commands%20errors#exceptions
+    https://disnake.readthedocs.io/en/latest/ext/commands/api.html?highlight=commands%20check#discord.ext.commands.check
+    https://disnake.readthedocs.io/en/latest/ext/commands/api.html?highlight=commands%20errors#exceptions
     """
     if isinstance(error, commands.errors.MissingPermissions):
         logger.info(

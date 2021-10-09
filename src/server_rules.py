@@ -5,9 +5,9 @@ server_rules is used to push roles to the server.
 It's also responsible for assigning the Member role, which grants access to the server.
 """
 
-from discord.ext import commands
-from discord import utils
-import discord
+from disnake.ext import commands
+from disnake import utils
+import disnake
 import asyncio
 
 
@@ -108,7 +108,7 @@ class server_rules(commands.Cog):
             if isinstance(value, list):
                 field['value'] = '\n'.join(value)
 
-        embed = discord.Embed.from_dict(message_data)
+        embed = disnake.Embed.from_dict(message_data)
         await channel.send(embed=embed)
 
     # @commands.Cog.listener(name="on_member_update")

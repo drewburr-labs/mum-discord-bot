@@ -5,9 +5,9 @@ self_roles is used to allow members to add or remove themselves from roles.
 This should be handled by a single message being in the 'self_roles' text channel, which will update roles based on reactions.
 """
 
-from discord.ext import commands
-from discord import utils
-import discord
+from disnake.ext import commands
+from disnake import utils
+import disnake
 
 
 class self_roles(commands.Cog):
@@ -210,7 +210,7 @@ class self_roles(commands.Cog):
                     "title": f'{title}',
                     "description": f"{description}\n\n{message_text}",
                 }
-                embed = discord.Embed.from_dict(embed_data)
+                embed = disnake.Embed.from_dict(embed_data)
 
                 if existing_message is None:
                     # Send message to channel

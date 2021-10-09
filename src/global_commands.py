@@ -5,8 +5,8 @@
 Commands that can be used anyone, anywhere.
 """
 
-from discord.ext import commands
-from discord import utils
+from disnake.ext import commands
+from disnake import utils
 
 
 class global_commands(commands.Cog):

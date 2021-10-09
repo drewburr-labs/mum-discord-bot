@@ -3,9 +3,9 @@
 start_here
 """
 
-import discord
-from discord import utils
-from discord.ext import tasks, commands
+import disnake
+from disnake import utils
+from disnake.ext import tasks, commands
 
 
 class start_here(commands.Cog):
@@ -66,7 +66,7 @@ class start_here(commands.Cog):
                 ]
             }
 
-            embed = discord.Embed.from_dict(embed_data)
+            embed = disnake.Embed.from_dict(embed_data)
             await channel.send(embed=embed)
 
 

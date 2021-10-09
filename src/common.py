@@ -3,7 +3,7 @@
 Common functions, methods, and classes to be used globally
 """
 
-import discord
+import disnake
 
 
 class Common():
@@ -11,7 +11,7 @@ class Common():
         pass
 
     # Define custom exception
-    class UserError(discord.ext.commands.CommandError):
+    class UserError(disnake.ext.commands.CommandError):
         """
         A command was run incorrectly, and the user should be told why.
         Example: User executes a lobby-specific command in #general
