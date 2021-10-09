@@ -177,6 +177,8 @@ class self_roles(commands.Cog):
             for msg in messages:
                 if msg.embeds:
                     message_dict[msg.embeds[0].title] = msg
+                else:
+                    await msg.delete()
 
             # Publish/update messages
             for title in self.message_data:
