@@ -49,54 +49,6 @@ class lobby_commands(commands.Cog):
         else:
             self.logger.info(f"Game code did not meet requirements: {args}")
 
-    @commands.command(name="mapvote")
-    @commands.check(Common.ctx_is_lobby)
-    async def mapvote(self, ctx, args=None):
-        """
-        Used to vote on which Among Us map to play.
-        """
-        votetime_min = 1
-        emoji_map = {
-            '🚀': 'skeld',
-            '✈️': 'mira',
-            '❄️': 'polus',
-        }
-
-        # Create the request message
-        request_msg = f'Vote for a map by reacting to this message.\nThe poll will close in {votetime_min} minute(s).'
-        for emoji, name in emoji_map.items():
-            request_msg += f'\n{emoji} - {name.capitalize()}'
-
-        message = await ctx.send(request_msg)
-        for emoji in emoji_map:
-            await message.add_reaction(emoji)
-
-        await asyncio.sleep(votetime_min * 60)
-
-        cache_message = disnake.utils.get(
-            ctx.bot.cached_messages, id=message.id)
-
-        votes = dict()
-        for reaction in cache_message.reactions:
-            emoji_name = emoji_map.get(reaction.emoji)
-            vote_count = reaction.count
-            vote_text = f'{reaction.emoji} {emoji_name.capitalize()}'
-
-            if emoji_name is not None:
-                votes[vote_text] = vote_count
-
-        description = str()
-        for item in votes:
-            description += f'{item} - {votes[item]}\n'
-
-        embed_data = {
-            'title': 'Mapvote Results',
-            'description': description
-        }
-
-        embed = disnake.Embed.from_dict(embed_data)
-        await ctx.channel.send(embed=embed)
-
     @commands.command(name="rename")
     @commands.check(Common.ctx_is_lobby)
     async def rename(self, ctx, *, args=None):
