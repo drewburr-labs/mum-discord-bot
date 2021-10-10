@@ -123,7 +123,7 @@ class lobby_handler(commands.Cog):
                 },
                 {
                     "name": "Limiting members",
-                    "value": f"Use the {prefix}`limit` command to change how many members can be in your voice channel.",
+                    "value": f"Use the `{prefix}limit` command to change how many members can join the voice channel.",
                 },
                 {
                     "name": f"The `{prefix}code` command",
