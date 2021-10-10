@@ -88,7 +88,15 @@ async def on_command_error(ctx, error):
             # Delete unauthorized commands that come from outside a lobby
             await ctx.message.delete()
     elif isinstance(error, Common.UserError):
+        print('UserError')
         await ctx.send(f'{ctx.author.mention} {error.message}')
+    elif isinstance(error, Common.AdminError):
+        print('AdminError')
+        admin_logger = BOT.get_cog('admin_logging')
+        await admin_logger.bot_log(ctx.guild, f'{ctx.author.mention} {error.message}')
+    elif isinstance(error, Common.SilentError):
+        print('SilentError')
+        logger.error(f'Error: {error}\n  - Invocation: {ctx.message.content}.')
     elif isinstance(error, commands.errors.UserNotFound) or isinstance(error, commands.errors.MemberNotFound):
         await ctx.send(f'{ctx.author.mention} {error}')
     else:

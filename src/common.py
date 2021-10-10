@@ -10,18 +10,30 @@ class Common():
     def __init__(self):
         pass
 
-    # Define custom exception
-    class UserError(disnake.ext.commands.CommandError):
+    class GenericError(disnake.ext.commands.CommandError):
         """
-        A command was run incorrectly, and the user should be told why.
-        Example: User executes a lobby-specific command in #general
-
-        Attributes:
-            message -- Error message to send to chat, as a reply.
+        Base error class, allows messages to be stored.
         """
 
         def __init__(self, message):
             self.message = message
+
+    # Define custom exception
+    class UserError(GenericError):
+        """
+        An error occurred, and the user should be told why.
+        Example: User executes a lobby-specific command in #general
+        """
+
+    class AdminError(GenericError):
+        """
+        An error occurred, and the server admin(s) should be informed.
+        """
+
+    class SilentError(GenericError):
+        """
+        An error occurred, and the error message should not be sent to Discord.
+        """
 
     @staticmethod
     def is_lobby(category):
