@@ -8,4 +8,4 @@ spec:
     spec:
       containers:
         - name: centralstation-bot
-          image: drewburr/centralstation-bot:1.1.0
+          image: drewburr/centralstation-bot:1.1.1
