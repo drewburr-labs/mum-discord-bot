@@ -7,8 +7,6 @@ from disnake.ext import commands
 from disnake import utils
 import disnake
 
-import asyncio
-
 from .common import Common
 
 
@@ -17,8 +15,12 @@ class admin_commands(commands.Cog):
         self.bot = bot
         self.logger = logger
 
-    def ctx_is_admin_commands(ctx):
-        if ctx.channel.name == 'admin-commands':
+        self.softban_role_name = 'Softban'
+        self.member_role_name = 'Member'
+        self.admin_command_channel_name = 'admin-commands'
+
+    def ctx_is_admin_commands(self, ctx):
+        if ctx.channel.name == self.admin_command_channel_name:
             return True
         else:
             return False
@@ -29,88 +31,49 @@ class admin_commands(commands.Cog):
         """
         Ensures all server members have the Member role
         """
-        member_role_name = 'Member'
-        member_role = utils.get(ctx.guild.roles, name=member_role_name)
+        member_role = utils.get(ctx.guild.roles, name=self.member_role_name)
+        softban_role = utils.get(ctx.guild.roles, name=self.softban_role_name)
 
         total_changes = 0
 
         for member in ctx.guild.members:
-            if member_role not in member.roles and not member.bot:
+            if member_role not in member.roles and softban_role not in member.roles and not member.bot:
                 await member.add_roles(member_role)
                 total_changes += 1
 
-        await ctx.send(f'Added the `{member_role_name}` role to {total_changes} members.')
+        await ctx.send(f'Added the `{member_role.name}` role to {total_changes} members.')
 
     @commands.has_role('Mod')
     @commands.command(name="softban")
-    @commands.check(ctx_is_admin_commands)
+    # @commands.check(ctx_is_admin_commands)
     async def softban(self, ctx, softban_member: disnake.Member = None, *, reason=None):
         """
         Starts a vote to softban a user.
 
         Softbanned users are given the 'softban' role, and are muted and deafened.
         """
+        # Ensure command is ran from admin channel
+        if not self.ctx_is_admin_commands(ctx):
+            await ctx.message.delete()
+            raise Common.AdminError(
+                f'!softban must be run from the {self.admin_command_channel_name} channel')
+
         if not softban_member or not reason:
             raise Common.UserError(
                 'Usage: `!softban drewburr for not being awesome.`')
 
-        softban_role = 'Softban'
-
-        emoji_data = {
-            'yes': None,
-            'no': None,
-        }
-
-        embed_data = {
-            "title": "Softban vote started!",
-            "description": f"{ctx.author.mention} has started a vote to softban {softban_member.mention}. An approval is required from another mod.\n\nReason: {reason}",
-        }
-
-        # Get emoji data for later use
-        for name in emoji_data:
-            emoji = utils.get(ctx.guild.emojis, name=name)
-            emoji_data[name] = emoji
-
-        embed = disnake.Embed.from_dict(embed_data)
-        message = await ctx.channel.send(embed=embed)
-
-        for emoji in emoji_data.values():
-            await message.add_reaction(emoji)
-
         admin_logger = self.bot.get_cog('admin_logging')
-        await admin_logger.bot_log(ctx.guild, f"{ctx.author.display_name} has initiated a vote to softban {softban_member.display_name}. Reason: {reason}.")
+        await admin_logger.bot_log(ctx.guild, f"{ctx.author.display_name} has softbanned {softban_member.display_name}. Reason: {reason}")
 
-        def approver_not_author(reaction, user):
-            # Also check the the user is not a bot
-            if user.name is ctx.author.name and not user.bot:
-                return False
+        member_role = utils.get(ctx.guild.roles, name=self.member_role_name)
+        softban_role = utils.get(ctx.guild.roles, name=self.softban_role_name)
 
-            return True
+        await softban_member.add_roles(softban_role)
+        await softban_member.remove_roles(member_role)
 
-        # Wait for the vote results
-        reaction = None
-        user = None
-        try:
-            reaction, user = await self.bot.wait_for('reaction_add', check=approver_not_author, timeout=600)
-        except asyncio.TimeoutError:
-            await admin_logger.bot_log(ctx.guild, f"{softban_member.display_name} was not softbanned. Timed out.")
-
-        # Handle the vote results
-        if reaction and user:
-            if reaction.emoji.name == 'yes':
-                softban_role = utils.get(
-                    ctx.guild.roles, name=softban_role)
-
-                await softban_member.edit(roles=[softban_role])
-                try:
-                    await softban_member.edit(mute=True, deafen=True)
-                except:
-                    pass
-
-                await admin_logger.bot_log(ctx.guild, f"{softban_member.display_name} ({softban_member.name}#{softban_member.discriminator}) was softbanned. Requested by: {ctx.author.display_name}. Approved by: {user.display_name}.")
-
-            elif reaction.emoji.name == 'no':
-                await admin_logger.bot_log(ctx.guild, f"{softban_member.display_name} was not softbanned. Denied by: {user.display_name}.")
+        if softban_member.voice:
+            # Disconnect user from voice chat
+            await softban_member.move_to(None)
 
 
 def setup(bot, logger):
