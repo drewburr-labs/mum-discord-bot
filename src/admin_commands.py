@@ -48,7 +48,7 @@ class admin_commands(commands.Cog):
     # @commands.check(ctx_is_admin_commands)
     async def softban(self, ctx, softban_member: disnake.Member = None, *, reason=None):
         """
-        Starts a vote to softban a user.
+        Softbans a user.
 
         Softbanned users are given the 'softban' role, and are muted and deafened.
         """
