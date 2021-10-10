@@ -5,9 +5,7 @@ import os
 import logging
 # from systemd.journal import JournalHandler
 
-from dotenv import load_dotenv
 from disnake.ext import commands
-from disnake import utils
 import disnake
 
 from src.common import Common
