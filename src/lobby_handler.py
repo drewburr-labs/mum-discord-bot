@@ -118,24 +118,16 @@ class lobby_handler(commands.Cog):
             "fields":
             [
                 {
-                    "name": "Managing the lobby",
-                    "value": f"By default, the creator of the lobby has the ability to manage channels, mute members, etc. To grant these privileges to another lobby member, use the `{prefix}promote @user` command.",
+                    "name": "The text-chat channel",
+                    "value": "Only those in the lobby's voice chat can see the text channel. This is your private space to chat and discuss.",
                 },
                 {
-                    "name": "Lobby text channels are private",
-                    "value": "Only those in the lobby's voice chat can see the text channel. You'll want to share game codes here.",
+                    "name": "Limiting members",
+                    "value": "Use the {prefix}`limit` command to change how many members can be in your voice channel.",
                 },
                 {
                     "name": f"The `{prefix}code` command",
                     "value": f"Use the `{prefix}code` command to communicate game codes. Use this command to get the current game code, or set a new one with `{prefix}code ABCXYZ`. This command also has the alias `{prefix}c`.",
-                },
-                {
-                    "name": f"Need a map?",
-                    "value": f"Have a new player, or forget the locations of cameras and vents? The `{prefix}map` command is here to help! **Tip:** Maps can also be requested by name `{prefix}map Polus`."
-                },
-                {
-                    "name": "Vote on a map",
-                    "value": f"Use the `{prefix}mapvote` command to vote on the map to play next."
                 },
                 {
                     "name": "Kicking a user",
