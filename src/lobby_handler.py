@@ -118,12 +118,12 @@ class lobby_handler(commands.Cog):
             "fields":
             [
                 {
-                    "name": "The text-chat channel",
-                    "value": "Only those in the lobby's voice chat can see the text channel. This is your private space to chat and discuss.",
+                    "name": "The text-chat",
+                    "value": "Only members in the lobby's voice chat can see the text channel. This is your private space to chat and discuss.",
                 },
                 {
                     "name": "Limiting members",
-                    "value": "Use the {prefix}`limit` command to change how many members can be in your voice channel.",
+                    "value": f"Use the {prefix}`limit` command to change how many members can be in your voice channel.",
                 },
                 {
                     "name": f"The `{prefix}code` command",
