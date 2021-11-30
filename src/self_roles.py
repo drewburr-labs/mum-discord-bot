@@ -41,10 +41,9 @@ class self_roles(commands.Cog):
                     ('crewmate_yellow', 'Among Us'),
                     ('creeper_face', 'Minecraft'),
                     ('phasmo_p', 'Phasmophobia'),
-                    ('rocket_league', 'Rocket League'),
-                    ('ghost', 'Call of Duty'),
-                    ('destiny', 'Destiny'),
-                    ('battlefield', 'Battlefield')
+                    ('battlefield', 'Battlefield'),
+                    ('masterchef', 'Halo'),
+                    ('apex', 'Apex')
                 ),
                 'description': "React to this message to be assigned a game-specific role. These role can be pinged by members who are looking to create or organize games."
             }
