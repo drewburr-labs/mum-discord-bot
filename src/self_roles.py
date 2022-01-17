@@ -41,7 +41,6 @@ class self_roles(commands.Cog):
                     ('crewmate_yellow', 'Among Us'),
                     ('creeper_face', 'Minecraft'),
                     ('phasmo_p', 'Phasmophobia'),
-                    ('battlefield', 'Battlefield'),
                     ('masterchef', 'Halo'),
                     ('apex', 'Apex'),
                     ('hunt', 'Hunt Showdown')
