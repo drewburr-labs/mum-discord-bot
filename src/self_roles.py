@@ -43,7 +43,8 @@ class self_roles(commands.Cog):
                     ('phasmo_p', 'Phasmophobia'),
                     ('battlefield', 'Battlefield'),
                     ('masterchef', 'Halo'),
-                    ('apex', 'Apex')
+                    ('apex', 'Apex'),
+                    ('hunt', 'Hunt Showdown')
                 ),
                 'description': "React to this message to be assigned a game-specific role. These role can be pinged by members who are looking to create or organize games."
             }
