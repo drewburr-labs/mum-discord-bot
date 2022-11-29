@@ -3,14 +3,14 @@
 Common functions, methods, and classes to be used globally
 """
 
-import disnake
+import discord
 
 
 class Common():
     def __init__(self):
         pass
 
-    class GenericError(disnake.ext.commands.CommandError):
+    class GenericError(discord.app_commands.AppCommandError):
         """
         Base error class, allows messages to be stored.
         """
@@ -36,12 +36,12 @@ class Common():
         """
 
     @staticmethod
-    def is_lobby(category):
+    def is_lobby(category: discord.CategoryChannel):
         """
         Returns True (bool) if a category is a lobby.
         """
 
-        if category.name.endswith("Lobby"):
+        if category.name.lower().endswith("lobby"):
             return True
         else:
             return False

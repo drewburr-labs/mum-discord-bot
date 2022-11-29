@@ -1,5 +1,5 @@
 # For more information, please refer to https://aka.ms/vscode-docker-python
-FROM python:3.10
+FROM python:3.11
 
 # Keeps Python from generating .pyc files in the container
 ENV PYTHONDONTWRITEBYTECODE=1
@@ -9,10 +9,9 @@ ENV PYTHONUNBUFFERED=1
 # Setup application variables
 ENV DISCORD_TOKEN=$DISCORD_TOKEN
 
-
 # Install pip requirements
-COPY requirements.txt .
-RUN python -m pip install -r requirements.txt
+COPY requirements.txt /tmp
+RUN python -m pip install -r /tmp/requirements.txt
 
 WORKDIR /app
 COPY . /app

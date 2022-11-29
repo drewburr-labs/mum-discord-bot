@@ -3,16 +3,17 @@
 Handler for automatically creating and deleting lobbies.
 """
 
-import disnake
-from disnake import utils
-from disnake.ext import commands
+import discord
+from discord import utils
+from discord.ext import commands
 from .common import Common
 
 
 class lobby_handler(commands.Cog):
     def __init__(self, bot, logger):
-        self.bot = bot
+        self.bot: commands.Bot = bot
         self.logger = logger
+        self.text_channel_name = "text-chat"
 
     @commands.Cog.listener()
     async def on_voice_state_update(self, member, before, after):
@@ -52,17 +53,19 @@ class lobby_handler(commands.Cog):
                 if not before.channel.members:
                     await self.delete_lobby(before.channel.category)
 
-    async def initialize_lobby_member(self, member, category):
+    async def initialize_lobby_member(self, member: discord.Member, category: discord.CategoryChannel):
         """
         Grants a user access to the currently joined lobby.
         Assumes the current lobby exists, and the member is still present in the lobby.
         """
 
         # Grant read access to text channels
-        for text_channel in category.text_channels:
-            await text_channel.set_permissions(member, read_messages=True)
+        for channel in category.text_channels:
+            await channel.set_permissions(member, read_messages=True)
+            if channel.name == self.text_channel_name:
+                await channel.send(f"{member.mention} joined the lobby.")
 
-    async def initialize_lobby_text_channel(self, category):
+    async def initialize_lobby_text_channel(self, category: discord.CategoryChannel):
         """
         Creates the text channel for a particular lobby.
 
@@ -71,10 +74,12 @@ class lobby_handler(commands.Cog):
         Retuns the created text channel.
         """
         guild = category.guild
-        text_channel_name = "text-chat"
+        prefix = self.bot.command_prefix
+
+        text_channel_topic = f"Use {prefix}code to set a game code."
 
         # Setup overwrites
-        default_overwrite = disnake.PermissionOverwrite(read_messages=False)
+        default_overwrite = discord.PermissionOverwrite(read_messages=False)
 
         overwrites = {
             # Text channels are invisible by default
@@ -82,13 +87,13 @@ class lobby_handler(commands.Cog):
         }
 
         # Setup text channel
-        text_channel = await category.create_text_channel(text_channel_name, overwrites=overwrites)
+        text_channel = await category.create_text_channel(self.text_channel_name, topic=text_channel_topic, overwrites=overwrites)
 
         await self.send_lobby_welcome_message(text_channel)
 
         return text_channel
 
-    async def initialize_lobby_voice_channel(self, category, seed_channel):
+    async def initialize_lobby_voice_channel(self, category: discord.CategoryChannel, seed_channel):
         """
         Creates the voice channel for a particular lobby.
 
@@ -111,32 +116,32 @@ class lobby_handler(commands.Cog):
         # text_channel = utils.get(ctx.guild.text_channels, name='general')
         prefix = self.bot.command_prefix
 
-        # https://disnake.readthedocs.io/en/latest/api.html#embed
+        # https://discord.readthedocs.io/en/latest/api.html#embed
         embed_data = {
             "title": "Welcome to the lobby!",
             "description": "Here's some tips to get you started",
             "fields":
             [
                 {
-                    "name": "The text-chat",
-                    "value": "Only members in the lobby's voice chat can see the text channel. This is your private space to chat and discuss.",
+                    "name": f"The {self.text_channel_name}",
+                    "value": f"Only members in the lobby's voice chat can see the {self.text_channel_name}. This is your private space to chat and discuss.",
+                },
+                {
+                    "name": "Make it your own!",
+                    "value": f"Rename the lobby using the `{prefix}rename` command.",
                 },
                 {
                     "name": "Limiting members",
-                    "value": f"Use the `{prefix}limit` command to change how many members can join the voice channel.",
+                    "value": f"Use the `{prefix}limit` command to change how many members can join the voice channel. Use `0` to remove the limit.",
                 },
                 {
                     "name": f"The `{prefix}code` command",
                     "value": f"Use the `{prefix}code` command to communicate game codes. Use this command to get the current game code, or set a new one with `{prefix}code ABCXYZ`. This command also has the alias `{prefix}c`.",
                 },
-                {
-                    "name": "Kicking a user",
-                    "value": f"If a member needs to be removed from a lobby, you can vote to kick a user with the `{prefix}votekick` command. Usage `{prefix}votekick @drewburr Reason for kicking`",
-                },
             ]
         }
 
-        embed = disnake.Embed.from_dict(embed_data)
+        embed = discord.Embed.from_dict(embed_data)
 
         await text_channel.send(embed=embed)
 
@@ -161,9 +166,6 @@ class lobby_handler(commands.Cog):
 
         # Create voice channel and setup permissions
         await self.initialize_lobby_text_channel(category)
-
-        # Grant user default access to the lobby
-        await self.initialize_lobby_member(member, category)
 
         # Move the user to the lobby. Triggers 'on_voice_state_update'
         self.logger.info(
@@ -200,7 +202,7 @@ class lobby_handler(commands.Cog):
                 print("Deleting role: " + role.name)
                 await role.delete()
 
-    async def clear_member_lobby_overwrites(self, member, category):
+    async def clear_member_lobby_overwrites(self, member: discord.Member, category: discord.CategoryChannel):
         """
         Clears a user's permission overwrites from a lobby.
 
@@ -209,12 +211,14 @@ class lobby_handler(commands.Cog):
 
         channels = category.channels
 
-        overwrite = disnake.PermissionOverwrite()
+        overwrite = discord.PermissionOverwrite()
 
         # Remove all channel permission overwrites
         for channel in channels:
             await channel.set_permissions(member, overwrite=overwrite)
+            if channel.name == self.text_channel_name:
+                await channel.send(f"{member.display_name} left the lobby.")
 
 
-def setup(bot, logger):
-    bot.add_cog(lobby_handler(bot, logger))
+async def setup(bot: commands.Bot, logger):
+    await bot.add_cog(lobby_handler(bot, logger))

@@ -1,22 +1,18 @@
 # bot-main.py
-""" centralstation-bot"""
+"""centralstation-bot"""
 
 import os
 import logging
 # from systemd.journal import JournalHandler
 
-from disnake.ext import commands
-import disnake
+from discord.ext import commands
+import discord
+import asyncio
 
 from src.common import Common
-import src.self_roles as self_roles
 import src.admin_logging as admin_logging
-import src.server_rules as server_rules
-import src.admin_commands as admin_commands
 import src.lobby_commands as lobby_commands
 import src.lobby_handler as lobby_handler
-import src.start_here as start_here
-import src.global_commands as global_commands
 
 Common = Common()
 
@@ -24,7 +20,7 @@ Common = Common()
 class debug_logger:
     # Logger meant for debugging at the terminal.
 
-    level = 0
+    level = logging.DEBUG
 
     def handle(self, record):
         self.emit(record)
@@ -42,17 +38,18 @@ class debug_logger:
 
 # Setup logger object
 logger = logging.getLogger(__name__)
-debug_handler = debug_logger()
-logger.addHandler(debug_handler)
+logger.setLevel(logging.DEBUG)
+logger.addHandler(debug_logger())
 
 # Setup bot variables
-PREFIX = '!'
+PREFIX = '/'
 APP_DIR = os.getenv('PWD')  # Given by Docker
 TOKEN = os.getenv('DISCORD_TOKEN')
 
 # Setup intents
-# https://disnake.readthedocs.io/en/latest/api.html?highlight=intents#discord.Intents.default
-intents = disnake.Intents.default()
+# https://discord.readthedocs.io/en/latest/api.html?highlight=intents#discord.Intents.default
+intents = discord.Intents.default()
+intents.message_content = True
 intents.members = True
 
 BOT = commands.Bot(command_prefix=PREFIX,
@@ -69,46 +66,30 @@ async def on_ready():
     for guild in BOT.guilds:
         await admin_logger.bot_log(guild, f"{BOT.user.name} has reconnected!")
 
+    # Sync application commands across all guilds
+    await BOT.tree.sync()
 
-@BOT.event
-async def on_command_error(ctx, error):
-    """
-    Core error handler
-    https://disnake.readthedocs.io/en/latest/ext/commands/api.html?highlight=commands%20check#discord.ext.commands.check
-    https://disnake.readthedocs.io/en/latest/ext/commands/api.html?highlight=commands%20errors#exceptions
-    """
-    if isinstance(error, commands.errors.MissingPermissions):
-        logger.info(
-            f'{ctx.author} attempted to run command: {ctx.message.content}')
-        if Common.ctx_is_lobby(ctx):
-            await ctx.send(f'{ctx.author.mention} You do not have access to run this command.')
-        else:
-            # Delete unauthorized commands that come from outside a lobby
-            await ctx.message.delete()
+
+@BOT.tree.error
+async def on_error(interaction: discord.Interaction, error: discord.app_commands.AppCommandError):
+    if isinstance(error, discord.app_commands.errors.CommandOnCooldown):
+        logger.warning(f'CommandOnCooldown: {error}')
+        await interaction.response.send_message(f"Command is on cooldown. Try again in {error.retry_after:.0f} seconds.")
     elif isinstance(error, Common.UserError):
-        print('UserError')
-        await ctx.send(f'{ctx.author.mention} {error.message}')
-    elif isinstance(error, Common.AdminError):
-        print('AdminError')
-        admin_logger = BOT.get_cog('admin_logging')
-        await admin_logger.bot_log(ctx.guild, f'{ctx.author.mention} {error.message}')
-    elif isinstance(error, Common.SilentError):
-        print('SilentError')
-        logger.error(f'Error: {error}\n  - Invocation: {ctx.message.content}.')
-    elif isinstance(error, commands.errors.UserNotFound) or isinstance(error, commands.errors.MemberNotFound):
-        await ctx.send(f'{ctx.author.mention} {error}')
+        logger.warning(f'UserError: {error}')
+        await interaction.response.send_message(error.message)
     else:
-        logger.error(
-            f'Unknown error. Invocation: {ctx.message.content}. \nError: {error}')
+        logger.warning(f'Unknown error: {error}')
+        await interaction.response.send_message("There was an error while handling your command.")
 
-# Import custom cogs
-self_roles.setup(BOT, logger)
-admin_logging.setup(BOT, logger)
-server_rules.setup(BOT, logger)
-admin_commands.setup(BOT, logger)
-lobby_commands.setup(BOT, logger, APP_DIR)
-lobby_handler.setup(BOT, logger)
-start_here.setup(BOT, logger)
-global_commands.setup(BOT, logger)
 
-BOT.run(TOKEN)
+async def start_bot():
+    """
+    Import custom cogs and start bot
+    """
+    await admin_logging.setup(BOT, logger)
+    await lobby_commands.setup(BOT, logger, APP_DIR)
+    await lobby_handler.setup(BOT, logger)
+    await BOT.start(TOKEN)
+
+asyncio.run(start_bot())

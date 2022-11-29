@@ -5,14 +5,14 @@ self_roles is used to allow members to add or remove themselves from roles.
 This should be handled by a single message being in the 'self_roles' text channel, which will update roles based on reactions.
 """
 
-from disnake.ext import commands
-from disnake import utils
-import disnake
+from discord.ext import commands
+from discord import utils
+import discord
 
 
 class self_roles(commands.Cog):
     def __init__(self, bot, logger):
-        self.bot = bot
+        self.bot: commands.Bot = bot
         self.logger = logger
         self.channel_name = 'self-roles'
 
@@ -157,7 +157,7 @@ class self_roles(commands.Cog):
                 f'Removed {member.name} from role: {remove_role.name}')
 
     @commands.has_role('Mod')
-    @commands.command(name="refresh-self-roles")
+    @commands.hybrid_command(name="refresh-self-roles")
     async def refresh_role_channel(self, ctx):
         """
         Sets up the roles channel to ensure the messages are up to date.
@@ -210,20 +210,19 @@ class self_roles(commands.Cog):
                     "title": f'{title}',
                     "description": f"{description}\n\n{message_text}",
                 }
-                embed = disnake.Embed.from_dict(embed_data)
+                embed = discord.Embed.from_dict(embed_data)
 
                 if existing_message is None:
                     # Send message to channel
                     new_message = await role_channel.send(embed=embed)
                 else:
                     # Update message with new embed
-                    await existing_message.edit(embed=embed)
-                    new_message = existing_message
+                    new_message = await existing_message.edit(embed=embed)
 
                 # Adds emojis to message.
                 for emoji in emoji_data.values():
                     await new_message.add_reaction(emoji)
 
 
-def setup(bot, logger):
-    bot.add_cog(self_roles(bot, logger))
+async def setup(bot, logger):
+    await bot.add_cog(self_roles(bot, logger))
