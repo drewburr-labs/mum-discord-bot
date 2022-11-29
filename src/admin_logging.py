@@ -11,7 +11,6 @@ class admin_logging(commands.Cog):
     def __init__(self, bot, logger):
         self.bot: commands.Bot = bot
         self.logger = logger
-        self.leave_channel_name = 'leave-log'
         self.bot_log_channel_name = 'bot-logs'
 
     async def bot_log(self, guild, msg=None, embed=None):
