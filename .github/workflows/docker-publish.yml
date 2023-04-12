@@ -4,7 +4,7 @@ on:
   # schedule:
   #   - cron: "20 4 * * *"
   push:
-    branches: [master]
+    branches: [main]
     # Publish semver tags as releases.
     tags: ["*.*.*"]
     paths-ignore:
@@ -14,7 +14,7 @@ on:
       - README.md
       - test.sh
   pull_request:
-    branches: [master]
+    branches: [main]
 
 env:
   # Use docker.io for Docker Hub if empty
