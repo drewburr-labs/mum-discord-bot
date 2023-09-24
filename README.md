@@ -34,6 +34,8 @@ Before executing, first create `.env` in the root of the repository. This should
 
 ```text
 DISCORD_TOKEN="your-token-here"
+CONTROLLER_GUILD_ID="guild-id"
+CONTROLLER_CHANNEL_ID="log-channel-id"
 ```
 
 To execute, run the following command. This will build and run the bot using your local files.
