@@ -45,8 +45,8 @@ logger.addHandler(debug_logger())
 PREFIX = '/'
 APP_DIR = os.getenv('PWD')  # Given by Docker
 TOKEN = os.getenv('DISCORD_TOKEN')
-CONTROLLER_GUILD_ID = int(os.getenv('CONTROLLER_GUILD_ID'))
-CONTROLLER_CHANNEL_ID = int(os.getenv('CONTROLLER_CHANNEL_ID'))
+CONTROLLER_GUILD_ID = int(os.getenv('CONTROLLER_GUILD_ID')) or 1154917737827684372
+CONTROLLER_CHANNEL_ID = int(os.getenv('CONTROLLER_CHANNEL_ID')) or 1155579990373568522
 
 # Setup intents
 # https://discord.readthedocs.io/en/latest/api.html?highlight=intents#discord.Intents.default
