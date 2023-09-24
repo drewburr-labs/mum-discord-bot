@@ -13,6 +13,7 @@ from src.common import Common
 import src.admin_logging as admin_logging
 import src.lobby_commands as lobby_commands
 import src.lobby_handler as lobby_handler
+import src.admin_events as admin_events
 
 Common = Common()
 
@@ -72,7 +73,7 @@ async def on_ready():
 
 
 @BOT.tree.error
-async def on_error(interaction: discord.Interaction, error: discord.app_commands.AppCommandError):
+async def on_error(interaction: discord.Interaction=None, error: discord.app_commands.AppCommandError=None):
     try:
         if isinstance(error, discord.app_commands.errors.CommandOnCooldown):
             logger.warning(f'CommandOnCooldown: {error}')
@@ -86,12 +87,15 @@ async def on_error(interaction: discord.Interaction, error: discord.app_commands
     except Exception as e:
         logger.warn('Failed to log on_error exception')
         logger.warn(e)
+        admin_logger = BOT.get_cog("admin_logging")
+        await admin_logger.log(f"Failed to log during AppCommandError exception\n\nSource Interaction: \n{interaction}\n\nSource Error: {error}\n\nLogger exception: {e}")
 
 async def start_bot():
     """
     Import custom cogs and start bot
     """
     await admin_logging.setup(BOT, logger, CONTROLLER_GUILD_ID, CONTROLLER_CHANNEL_ID)
+    await admin_events.setup(BOT, logger)
     await lobby_commands.setup(BOT, logger, APP_DIR)
     await lobby_handler.setup(BOT, logger)
     await BOT.start(TOKEN)
