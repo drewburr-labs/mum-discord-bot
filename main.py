@@ -45,6 +45,7 @@ logger.addHandler(debug_logger())
 PREFIX = '/'
 APP_DIR = os.getenv('PWD')  # Given by Docker
 TOKEN = os.getenv('DISCORD_TOKEN')
+CONTROLLER_GUILD_ID = os.getenv('CONTROLLER_GUILD_ID')
 
 # Setup intents
 # https://discord.readthedocs.io/en/latest/api.html?highlight=intents#discord.Intents.default
@@ -63,8 +64,7 @@ async def on_ready():
 
     admin_logger = BOT.get_cog('admin_logging')
 
-    for guild in BOT.guilds:
-        await admin_logger.bot_log(guild, f"{BOT.user.name} has reconnected!")
+    await admin_logger.log(f"{BOT.user.name} has reconnected!")
 
     # Sync application commands across all guilds
     await BOT.tree.sync()
@@ -72,22 +72,25 @@ async def on_ready():
 
 @BOT.tree.error
 async def on_error(interaction: discord.Interaction, error: discord.app_commands.AppCommandError):
-    if isinstance(error, discord.app_commands.errors.CommandOnCooldown):
-        logger.warning(f'CommandOnCooldown: {error}')
-        await interaction.response.send_message(f"Command is on cooldown. Try again in {error.retry_after:.0f} seconds.")
-    elif isinstance(error, Common.UserError):
-        logger.warning(f'UserError: {error}')
-        await interaction.response.send_message(error.message)
-    else:
-        logger.warning(f'Unknown error: {error}')
-        await interaction.response.send_message("There was an error while handling your command.")
-
+    try:
+        if isinstance(error, discord.app_commands.errors.CommandOnCooldown):
+            logger.warning(f'CommandOnCooldown: {error}')
+            await interaction.response.send_message(f"Command is on cooldown. Try again in {error.retry_after:.0f} seconds.")
+        elif isinstance(error, Common.UserError):
+            logger.warning(f'UserError: {error}')
+            await interaction.response.send_message(error.message)
+        else:
+            logger.warning(f'Unknown error: {error}')
+            await interaction.response.send_message("There was an error while handling your command.")
+    except Exception as e:
+        logger.warn('Failed to log on_error exception')
+        logger.warn(e)
 
 async def start_bot():
     """
     Import custom cogs and start bot
     """
-    await admin_logging.setup(BOT, logger)
+    await admin_logging.setup(BOT, logger, CONTROLLER_GUILD_ID)
     await lobby_commands.setup(BOT, logger, APP_DIR)
     await lobby_handler.setup(BOT, logger)
     await BOT.start(TOKEN)
