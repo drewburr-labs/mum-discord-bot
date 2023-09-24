@@ -7,6 +7,9 @@ import discord
 
 
 class Common():
+    github_url = "https://github.com/drewburr-labs/mum-discord-bot"
+    discord_invite = "https://discord.gg/W4pAmXTts5"
+
     def __init__(self):
         pass
 
