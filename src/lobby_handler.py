@@ -53,7 +53,7 @@ class lobby_handler(commands.Cog):
 
             # If user left a lobby
             if before.channel is not None and Common.is_lobby(before.channel.category):
-                # Clear member's roles from last lobby
+                # Clear member's permissions from last lobby
                 await self.clear_member_lobby_overwrites(
                     member, before.channel.category
                 )
@@ -71,8 +71,8 @@ class lobby_handler(commands.Cog):
         """
         Creates a lobby (category) named after the member.
         Adds a text and voice channel to the category.
-        Creates a role to grant access to the text channel.
-        The creating member will be granted access to manage the channels in this category.
+        Revokes default read access to the text channel.
+        The creating member will be automatically moved into the lobby.
         """
 
         # Generate a lobby, based on the username
@@ -103,7 +103,7 @@ class lobby_handler(commands.Cog):
     async def initialize_lobby_text_channel(self, category: discord.CategoryChannel):
         """
         Creates the text channel for a particular lobby.
-        Text channel is hidden from users with the default role.
+        Text channel is hidden from users by revoking default read access.
         Retuns the created text channel.
         """
         guild = category.guild
@@ -182,27 +182,16 @@ class lobby_handler(commands.Cog):
         """
 
         channels = category.channels
-        category_roles = list()
-
         self.logger.info(f"Deleting empty category: {category}")
 
         # Delete all channels
         for channel in channels:
-            category_roles.extend(channel.changed_roles)
-
             self.logger("Deleting channel: " + channel.name)
             await channel.delete()
 
         # Delete category
         self.logger.info("Deleting category: " + category.name)
-        category_roles.extend(category.changed_roles)
         await category.delete()
-
-        # Delete any non-default roles
-        for role in category_roles:
-            if not role.is_default():
-                self.logger.info("Deleting role: " + role.name)
-                await role.delete()
 
     async def clear_member_lobby_overwrites(
         self, member: discord.Member, category: discord.CategoryChannel
