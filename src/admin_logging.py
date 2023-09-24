@@ -31,7 +31,7 @@ class admin_logging(commands.Cog):
                 await channel.send(msg)
 
             if embed:
-                await channel.send(embed=embed)
+                await channel.send(embeds=[embed])
         except Exception as e:
             self.logger.error("Failed to admin log message")
             self.logger.error(e)
@@ -39,8 +39,6 @@ class admin_logging(commands.Cog):
 
         if not (msg or embed):
             await channel.send("`bot_log()` was called without any arguments!")
-
-
 
 
 async def setup(bot: commands.Bot, logger: Logger, guild_id: int, channel_id: int):
