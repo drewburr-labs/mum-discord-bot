@@ -186,8 +186,13 @@ class lobby_handler(commands.Cog):
 
         # Delete all channels
         for channel in channels:
-            self.logger("Deleting channel: " + channel.name)
-            await channel.delete()
+            try:
+                self.logger.info("Deleting channel: " + channel.name)
+                await channel.delete()
+            except Exception as e:
+                self.logger.info("Failed to delete lobby channel")
+                self.logger.info(e)
+                raise e
 
         # Delete category
         self.logger.info("Deleting category: " + category.name)
