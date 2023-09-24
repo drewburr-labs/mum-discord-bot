@@ -45,7 +45,8 @@ logger.addHandler(debug_logger())
 PREFIX = '/'
 APP_DIR = os.getenv('PWD')  # Given by Docker
 TOKEN = os.getenv('DISCORD_TOKEN')
-CONTROLLER_GUILD_ID = os.getenv('CONTROLLER_GUILD_ID')
+CONTROLLER_GUILD_ID = int(os.getenv('CONTROLLER_GUILD_ID'))
+CONTROLLER_CHANNEL_ID = int(os.getenv('CONTROLLER_CHANNEL_ID'))
 
 # Setup intents
 # https://discord.readthedocs.io/en/latest/api.html?highlight=intents#discord.Intents.default
@@ -90,7 +91,7 @@ async def start_bot():
     """
     Import custom cogs and start bot
     """
-    await admin_logging.setup(BOT, logger, CONTROLLER_GUILD_ID)
+    await admin_logging.setup(BOT, logger, CONTROLLER_GUILD_ID, CONTROLLER_CHANNEL_ID)
     await lobby_commands.setup(BOT, logger, APP_DIR)
     await lobby_handler.setup(BOT, logger)
     await BOT.start(TOKEN)
