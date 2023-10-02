@@ -14,7 +14,7 @@ Mum manages voice channels by creating what is referred to as a 'Lobby'. A Lobby
 
 In Discord terms, a Lobby is a category that contains both a voice channel and a text channel. Each channel is aptly named `voice chat` and `text-chat`, respectively.
 
-<img src="./docs/lobby-example.png" alt="drawing" width="280"/>
+<img src="https://raw.githubusercontent.com/drewburr-labs/mum-discord-bot/main/docs/lobby-example.png" alt="drawing" width="280"/>
 
 A Lobby is intended to be a semi-private, dedicated space for an activity. To support this, the `text-chat` is created as a private channel, so it wil be invisible. Once a user joins the Lobby's `voice chat`, they will receive permissions to view the channel.
 
