@@ -1,8 +1,0 @@
----
-namespace: central-station-prd
-bases:
-  - ../base
-resources:
-  - discord-token-sealed.yaml
-patchesStrategicMerge:
-  - bot.yaml
