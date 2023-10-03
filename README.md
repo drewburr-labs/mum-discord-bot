@@ -27,6 +27,23 @@ To help support administration, several steps are taken to ensure control over L
 
 A Lobby is considered a 'Lobby' when the category name ends with, well, Lobby. This is not case-sensitive, so names like `my lobby` and `another LoBbY` are both valid Lobby names. Due to this, it is critical that lobbies are not manually renamed, **and no existing category names end in 'lobby', otherwise Mum will delete it!**
 
+## Self-hosting
+
+Mum can be self-hosted using the packages provided by this repository
+
+- [mum-discord-bot](https://github.com/drewburr-labs/mum-discord-bot/pkgs/container/mum-discord-bot) is a Dockerized version of this repository.
+- [mum-discord-bot/mum-discord-bot](https://github.com/drewburr-labs/mum-discord-bot/pkgs/container/mum-discord-bot%2Fmum-discord-bot) is a Helm chart for deploying the Docker container to Kubernetes.
+
+### Environment variables
+
+The bot application expects the below environment variables to be set.
+
+| Name                  | Description                                          |
+| --------------------- | ---------------------------------------------------- |
+| DISCORD_TOKEN         | Discord application token for bot authentication     |
+| CONTROLLER_GUILD_ID   | Guild ID for admin control and logging               |
+| CONTROLLER_CHANNEL_ID | Channel ID in the controller guild for admin logging |
+
 ## Testing Changes
 
 Local testing requires Docker to be installed.
