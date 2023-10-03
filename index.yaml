@@ -3,6 +3,16 @@ entries:
   mum-discord-bot:
   - apiVersion: v2
     appVersion: 3.0.0
+    created: "2023-10-03T00:50:57.062777061Z"
+    description: A Helm chart for Kubernetes
+    digest: 2fa151e4ad212542a1dc91da1786f127ce495667a7a7dd642dce885853cc6efa
+    name: mum-discord-bot
+    type: application
+    urls:
+    - https://github.com/drewburr-labs/mum-discord-bot/releases/download/mum-discord-bot-0.2.0/mum-discord-bot-0.2.0.tgz
+    version: 0.2.0
+  - apiVersion: v2
+    appVersion: 3.0.0
     created: "2023-10-02T01:28:39.55536-04:00"
     description: A Helm chart for Kubernetes
     digest: cd1b866877338d4fb97ea0ce379d63251fac3ef87329cda8a47077bc482db462
@@ -11,4 +21,4 @@ entries:
     urls:
     - mum-discord-bot-0.1.0.tgz
     version: 0.1.0
-generated: "2023-10-02T01:28:39.554673-04:00"
+generated: "2023-10-03T00:50:57.062793561Z"
