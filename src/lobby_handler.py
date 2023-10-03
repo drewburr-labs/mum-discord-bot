@@ -114,9 +114,12 @@ class lobby_handler(commands.Cog):
         # Setup overwrites
         default_overwrite = discord.PermissionOverwrite(read_messages=False)
 
+        bot_member = utils.get(guild.members, id=self.bot.user.id)
+        bot_role = bot_member.roles[-1]
+
         overwrites = {
-            # Text channels are invisible by default
-            guild.default_role: default_overwrite
+            guild.default_role: discord.PermissionOverwrite(read_messages=False), # Set global deny
+            bot_role: discord.PermissionOverwrite(read_messages=True) # Ensure bot keeps permissions
         }
 
         # Setup text channel
