@@ -5,11 +5,11 @@ metadata:
   namespace: mum-discord-bot
 spec:
   destination:
-    namespace: traefik
+    namespace: mum-discord-bot
     server: https://kubernetes.default.svc
   project: default
   source:
-    path: k8s/traefik
+    path: deploy/chart
     repoURL: git@github.com:drewburr-labs/mum-discord-bot.git
   syncPolicy:
     syncOptions:
