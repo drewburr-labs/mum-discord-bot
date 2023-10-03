@@ -11,6 +11,7 @@ spec:
   source:
     path: deploy/chart
     repoURL: git@github.com:drewburr-labs/mum-discord-bot.git
+    targetRevision: HEAD
   syncPolicy:
     syncOptions:
     - ApplyOutOfSyncOnly=true
