@@ -1,5 +1,7 @@
 # Mum - Discord Bot
 
+[![Docker Build/Publish](https://github.com/drewburr-labs/mum-discord-bot/actions/workflows/docker-publish.yml/badge.svg)](https://github.com/drewburr-labs/mum-discord-bot/actions/workflows/docker-publish.yml) [![Chart Publish](https://github.com/drewburr-labs/mum-discord-bot/actions/workflows/helm-publish.yml/badge.svg)](https://github.com/drewburr-labs/mum-discord-bot/actions/workflows/helm-publish.yml) [![Artifact Hub](https://img.shields.io/endpoint?url=https://artifacthub.io/badge/repository/mum-discord-bot)](https://artifacthub.io/packages/search?repo=mum-discord-bot)
+
 Mum is a Discord bot designed to handle managing voice channels using semi-private lobbies that are created when needed and deleted when they are not.
 
 ## Server Setup
