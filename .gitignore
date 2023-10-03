@@ -2,5 +2,5 @@ venv
 .env
 src/__pycache__
 .vscode
-**/unsealed*
-**/*unsealed*
+**/*secret*
+deploy/charts

@@ -1,0 +1,10 @@
+apiVersion: v2
+name: mum-discord-bot
+description: A Helm chart for Kubernetes
+type: application
+version: 0.1.0
+dependencies:
+- name: mum-discord-bot
+  repository: https://drewburr-labs.github.io/mum-discord-bot
+  version: 0.2.2
+  alias: mum

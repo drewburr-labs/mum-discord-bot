@@ -1,0 +1,6 @@
+dependencies:
+- name: mum-discord-bot
+  repository: https://drewburr-labs.github.io/mum-discord-bot
+  version: 0.2.2
+digest: sha256:dea43ead2c37f402eb58721b67ff106be8a128f69a8dd8b970d857bd100bdbba
+generated: "2023-10-02T22:11:11.954852-04:00"

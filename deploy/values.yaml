@@ -1,0 +1,5 @@
+---
+mum:
+  envFrom:
+    secretRef: discord-credentials
+    optional: false
