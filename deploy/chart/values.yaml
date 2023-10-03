@@ -1,5 +1,6 @@
 ---
 mum:
   envFrom:
-    - secretRef: discord-credentials
-      optional: false
+    - secretRef:
+        name: discord-credentials
+        optional: false
