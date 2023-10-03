@@ -30,6 +30,10 @@ resources: {}
 volumes: []
 volumeMounts: []
 
+# Environment variables to set in the container.
+env: []
+envFrom: []
+
 nodeSelector: {}
 tolerations: []
 affinity: {}
