@@ -8,6 +8,7 @@ import discord
 from discord import utils
 from discord.ext import commands
 from .common import Common
+import uuid
 
 
 class lobby_handler(commands.Cog):
@@ -31,42 +32,70 @@ class lobby_handler(commands.Cog):
         Delete any empty lobbies.
         """
 
+        guild = member.guild
+        event_id = str(uuid.uuid4())
+        try:
+            logger_context = {
+                "guild": guild,
+                "member": member,
+                "before_channel": before.channel,
+                "after_channel": after.channel,
+            }
+        except Exception as e:
+            print(e)
+
         # Don't do anything if user's channel didn't update
         if before.channel is not after.channel:
-            guild = member.guild
+            self.logger.debug(f"Member voice state changed", logger_context, event_id)
 
             seed_channel = utils.get(guild.voice_channels, name="Create New Lobby")
 
-            # If user joined a channel
             if after.channel is not None:
+                self.logger.debug("Member joined new voice channel", event_id)
+
                 if after.channel is seed_channel:
-                    # User has joined the seed channel. Create a new lobby.
+                    self.logger.debug("Member creating new lobby.", event_id)
                     try:
-                        await self.initialize_lobby(guild, seed_channel, member)
+                        await self.initialize_lobby(seed_channel, member, event_id)
                     except Exception as e:
-                        self.logger.warn('Failed to initialize lobby')
+                        self.logger.warn("Failed to initialize lobby", event_id)
                         self.logger.warn(e)
-                        raise e
+
                 elif Common.is_lobby(after.channel.category):
-                    # User is joining an existing lobby
-                    await self.initialize_lobby_member(member, after.channel.category)
+                    self.logger.debug("Member joined existing lobby.", event_id)
+                    try:
+                        await self.initialize_lobby_member(
+                            member, after.channel.category, event_id
+                        )
+                    except Exception as e:
+                        self.logger.error(
+                            "Failed to initialize lobby member.", event_id
+                        )
+                        self.logger.error(e, event_id)
 
-            # If user left a lobby
             if before.channel is not None and Common.is_lobby(before.channel.category):
-                # Clear member's permissions from last lobby
-                await self.clear_member_lobby_overwrites(
-                    member, before.channel.category
-                )
+                self.logger.debug("Member left lobby.", event_id)
 
-                # If the last lobby is empty, delete it
-                if not before.channel.members:
-                    await self.delete_lobby(before.channel.category)
+                try:
+                    await self.clear_member_lobby_overwrites(
+                        member, before.channel.category
+                    )
+                except Exception as e:
+                    self.logger.error(
+                        "Failed to clear member lobby overwrites.", event_id
+                    )
+                    self.logger.error(e, event_id)
+
+                try:
+                    if not before.channel.members:
+                        self.logger.debug("Deleting empty lobby.", event_id)
+                        await self.delete_lobby(before.channel.category, event_id)
+                except Exception as e:
+                    self.logger.error("Failed to delete empty lobby.", event_id)
+                    self.logger.error(e, event_id, event_id)
 
     async def initialize_lobby(
-        self,
-        guild: discord.Guild,
-        seed_channel: discord.VoiceChannel,
-        member: discord.Member,
+        self, seed_channel: discord.VoiceChannel, member: discord.Member, event_id: str
     ):
         """
         Creates a lobby (category) named after the member.
@@ -80,27 +109,35 @@ class lobby_handler(commands.Cog):
         category_name = f"{member.display_name}'s Lobby"
         voice_channel_name = "voice chat"
 
+        self.logger.debug(f"Creating new lobby.", event_id)
+
         if seed_channel.category:
             category: discord.CategoryChannel = await seed_channel.category.clone(
                 name=category_name
             )
+            self.logger.debug(f"Cloning seed channel category.", event_id)
         else:
             category = await seed_channel.guild.create_category_channel(category_name)
+            self.logger.debug(f"Creating lobby category.", event_id)
 
-
+        self.logger.debug(f"Cloning seed channel.", event_id)
         voice_channel: discord.VoiceChannel = await seed_channel.clone(
             name=voice_channel_name
         )
-        await voice_channel.move(beginning=True, category=category)
-        await self.initialize_lobby_text_channel(category)
 
-        # Move the user to the lobby. Triggers 'on_voice_state_update'
-        self.logger.info(
-            f"Moving {member.display_name} to channel: {voice_channel.name}"
-        )
+        self.logger.debug(f"Moving voice channel to lobby category.", event_id)
+        await voice_channel.move(beginning=True, category=category)
+
+        self.logger.debug(f"Creating lobby text channel.", event_id)
+        await self.initialize_lobby_text_channel(category, event_id)
+
+        # Triggers 'on_voice_state_update'
+        self.logger.debug(f"Moving member to lobby voice channel.", event_id)
         await member.edit(voice_channel=voice_channel)
 
-    async def initialize_lobby_text_channel(self, category: discord.CategoryChannel):
+    async def initialize_lobby_text_channel(
+        self, category: discord.CategoryChannel, event_id: str
+    ):
         """
         Creates the text channel for a particular lobby.
         Text channel is hidden from users by revoking default read access.
@@ -111,39 +148,44 @@ class lobby_handler(commands.Cog):
 
         text_channel_topic = f"Use {prefix}code to set a game code."
 
-        # Setup overwrites
-        default_overwrite = discord.PermissionOverwrite(read_messages=False)
-
         bot_member = utils.get(guild.members, id=self.bot.user.id)
         bot_role = bot_member.roles[-1]
 
         overwrites = {
-            guild.default_role: discord.PermissionOverwrite(read_messages=False), # Set global deny
-            bot_role: discord.PermissionOverwrite(read_messages=True) # Ensure bot keeps permissions
+            guild.default_role: discord.PermissionOverwrite(
+                read_messages=False
+            ),  # Set global deny
+            bot_role: discord.PermissionOverwrite(
+                read_messages=True
+            ),  # Ensure bot keeps permissions
         }
 
+        self.logger.debug("Creating lobby text channel.", event_id)
         # Setup text channel
         text_channel = await category.create_text_channel(
             self.text_channel_name, topic=text_channel_topic, overwrites=overwrites
         )
 
+        self.logger.debug("Sending lobby welcome message.", event_id)
         await self.send_lobby_welcome_message(text_channel)
 
         return text_channel
 
     async def initialize_lobby_member(
-        self, member: discord.Member, category: discord.CategoryChannel
+        self, member: discord.Member, category: discord.CategoryChannel, event_id: str
     ):
         """
-        Grants a user access to the currently joined lobby.
+        Grant a member access to the currently joined lobby.
         Assumes the current lobby exists, and the member is still present in the lobby.
         """
 
         # Grant read access to text channels
         for channel in category.text_channels:
+            self.logger.debug("Granting member read access to text channel.", event_id)
             await channel.set_permissions(member, read_messages=True)
             if channel.name == self.text_channel_name:
-                await channel.send(f"{member.mention} joined the lobby.")
+                self.logger.debug("Sending member join notification message.", event_id)
+                await channel.send(f"{member.display_name} joined the lobby.")
 
     # @BOT.command(name="test")
     async def send_lobby_welcome_message(self, text_channel: discord.TextChannel):
@@ -175,10 +217,9 @@ class lobby_handler(commands.Cog):
         }
 
         embed = discord.Embed.from_dict(embed_data)
-
         await text_channel.send(embeds=[embed])
 
-    async def delete_lobby(self, category):
+    async def delete_lobby(self, category, event_id):
         """
         Handles the deletion of an existing lobby.
         Assumes lobby still exists.
@@ -190,7 +231,7 @@ class lobby_handler(commands.Cog):
         # Delete all channels
         for channel in channels:
             try:
-                self.logger.info("Deleting channel: " + channel.name)
+                self.logger.debug("Deleting channel", channel, event_id)
                 await channel.delete()
             except Exception as e:
                 self.logger.info("Failed to delete lobby channel")
@@ -202,7 +243,7 @@ class lobby_handler(commands.Cog):
         await category.delete()
 
     async def clear_member_lobby_overwrites(
-        self, member: discord.Member, category: discord.CategoryChannel
+        self, member: discord.Member, category: discord.CategoryChannel, event_id: str
     ):
         """
         Clears a user's permission overwrites from a lobby.
@@ -210,13 +251,14 @@ class lobby_handler(commands.Cog):
         """
 
         channels = category.channels
-
         overwrite = discord.PermissionOverwrite()
 
         # Remove all channel permission overwrites
+        self.logger.debug("Removing member lobby overwrites.", event_id)
         for channel in channels:
             await channel.set_permissions(member, overwrite=overwrite)
             if channel.name == self.text_channel_name:
+                self.logger.debug("Sending member leave notification message.", event_id)
                 await channel.send(f"{member.display_name} left the lobby.")
 
 
