@@ -3,4 +3,4 @@ venv
 src/__pycache__
 .vscode
 **/*secret*
-deploy/charts
+deploy/chart/charts
