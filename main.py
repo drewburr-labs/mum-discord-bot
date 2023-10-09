@@ -21,19 +21,34 @@ Common = Common()
 class debug_logger:
     # Logger meant for debugging at the terminal.
 
-    level = logging.DEBUG
+    LOG_LEVEL = os.getenv('LOG_LEVEL') or "info"
 
-    def handle(self, record):
+    match LOG_LEVEL:
+        case "debug":
+            level = logging.DEBUG
+        case "info":
+            level = logging.INFO
+        case "warning":
+            level = logging.WARNING
+        case "error":
+            level = logging.ERROR
+        case "critical":
+            level = logging.CRITICAL
+
+
+
+
+    def handle(self, record: logging.LogRecord):
         self.emit(record)
 
-    def handleError(self, record):
+    def handleError(self, record: logging.LogRecord):
         self.emit(record)
 
-    def emit(self, record):
+    def emit(self, record: logging.LogRecord):
         # https://docs.python.org/3/library/logging.html#logrecord-objects
         # Extracts the log message for terminal printing
         # Formatting: filename, line_number, message
-        msg = f"{record.pathname}, {record.lineno}, \"{record.msg}\""
+        msg = f"{record.pathname}, {record.lineno}, \"{record.msg}\", {record.args}"
         print(msg)
 
 
