@@ -44,6 +44,8 @@ The bot application expects the below environment variables to be set.
 | CONTROLLER_GUILD_ID   | Guild ID for admin control and logging               |
 | CONTROLLER_CHANNEL_ID | Channel ID in the controller guild for admin logging |
 
+> Additionally, LOG_LEVEL can be configured to change the default logging level (info).
+
 ## Testing Changes
 
 Local testing requires Docker to be installed.
