@@ -42,7 +42,6 @@ class lobby_handler(commands.Cog):
                 "after_channel": after.channel,
             }
         except Exception as e:
-
             self.logger.error("Failed to initialize lobby member.", event_id)
             self.logger.error(e, event_id)
 
@@ -146,7 +145,9 @@ class lobby_handler(commands.Cog):
             self.logger.debug(f"Moving member to lobby voice channel.", event_id)
             await member.edit(voice_channel=voice_channel)
         except Exception as e:
-            self.logger.error(f"Failed to move member to lobby voice channel.", event_id)
+            self.logger.error(
+                f"Failed to move member to lobby voice channel.", event_id
+            )
             self.logger.error(e, event_id)
 
     async def initialize_lobby_text_channel(
@@ -278,8 +279,11 @@ class lobby_handler(commands.Cog):
                     )
                     await channel.send(f"{member.display_name} left the lobby.")
             except Exception as e:
-                self.logger.error("Failed to remove channel permissions.", channel.name, event_id)
+                self.logger.error(
+                    "Failed to remove channel permissions.", channel.name, event_id
+                )
                 self.logger.error(e, event_id)
+
 
 async def setup(bot: commands.Bot, logger):
     await bot.add_cog(lobby_handler(bot, logger))
