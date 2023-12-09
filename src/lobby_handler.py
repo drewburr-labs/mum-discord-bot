@@ -42,7 +42,9 @@ class lobby_handler(commands.Cog):
                 "after_channel": after.channel,
             }
         except Exception as e:
-            print(e)
+
+            self.logger.error("Failed to initialize lobby member.", event_id)
+            self.logger.error(e, event_id)
 
         # Don't do anything if user's channel didn't update
         if before.channel is not after.channel:
@@ -58,8 +60,8 @@ class lobby_handler(commands.Cog):
                     try:
                         await self.initialize_lobby(seed_channel, member, event_id)
                     except Exception as e:
-                        self.logger.warn("Failed to initialize lobby", event_id)
-                        self.logger.warn(e)
+                        self.logger.error("Failed to initialize lobby", event_id)
+                        self.logger.error(e, event_id)
 
                 elif Common.is_lobby(after.channel.category):
                     self.logger.debug("Member joined existing lobby.", event_id)
@@ -78,7 +80,7 @@ class lobby_handler(commands.Cog):
 
                 try:
                     await self.clear_member_lobby_overwrites(
-                        member, before.channel.category
+                        member, before.channel.category, event_id
                     )
                 except Exception as e:
                     self.logger.error(
@@ -125,15 +127,27 @@ class lobby_handler(commands.Cog):
             name=voice_channel_name
         )
 
-        self.logger.debug(f"Moving voice channel to lobby category.", event_id)
-        await voice_channel.move(beginning=True, category=category)
+        try:
+            self.logger.debug(f"Moving voice channel to lobby category.", event_id)
+            await voice_channel.move(beginning=True, category=category)
+        except Exception as e:
+            self.logger.error(f"Failed to move voice channel.", event_id)
+            self.logger.error(e, event_id)
 
-        self.logger.debug(f"Creating lobby text channel.", event_id)
-        await self.initialize_lobby_text_channel(category, event_id)
+        try:
+            self.logger.debug(f"Creating lobby text channel.", event_id)
+            await self.initialize_lobby_text_channel(category, event_id)
+        except Exception as e:
+            self.logger.error(f"Failed to create lobby text channel.", event_id)
+            self.logger.error(e, event_id)
 
-        # Triggers 'on_voice_state_update'
-        self.logger.debug(f"Moving member to lobby voice channel.", event_id)
-        await member.edit(voice_channel=voice_channel)
+        try:
+            # Triggers 'on_voice_state_update'
+            self.logger.debug(f"Moving member to lobby voice channel.", event_id)
+            await member.edit(voice_channel=voice_channel)
+        except Exception as e:
+            self.logger.error(f"Failed to move member to lobby voice channel.", event_id)
+            self.logger.error(e, event_id)
 
     async def initialize_lobby_text_channel(
         self, category: discord.CategoryChannel, event_id: str
@@ -256,11 +270,16 @@ class lobby_handler(commands.Cog):
         # Remove all channel permission overwrites
         self.logger.debug("Removing member lobby overwrites.", event_id)
         for channel in channels:
-            await channel.set_permissions(member, overwrite=overwrite)
-            if channel.name == self.text_channel_name:
-                self.logger.debug("Sending member leave notification message.", event_id)
-                await channel.send(f"{member.display_name} left the lobby.")
-
+            try:
+                await channel.set_permissions(member, overwrite=overwrite)
+                if channel.name == self.text_channel_name:
+                    self.logger.debug(
+                        "Sending member leave notification message.", event_id
+                    )
+                    await channel.send(f"{member.display_name} left the lobby.")
+            except Exception as e:
+                self.logger.error("Failed to remove channel permissions.", channel.name, event_id)
+                self.logger.error(e, event_id)
 
 async def setup(bot: commands.Bot, logger):
     await bot.add_cog(lobby_handler(bot, logger))
