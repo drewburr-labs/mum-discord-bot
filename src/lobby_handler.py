@@ -127,17 +127,20 @@ class lobby_handler(commands.Cog):
         )
 
         try:
-            self.logger.debug(f"Moving voice channel to lobby category.", event_id)
-            await voice_channel.move(beginning=True, category=category)
-        except Exception as e:
-            self.logger.error(f"Failed to move voice channel.", event_id)
-            self.logger.error(e, event_id)
-
-        try:
             self.logger.debug(f"Creating lobby text channel.", event_id)
             await self.initialize_lobby_text_channel(category, event_id)
         except Exception as e:
             self.logger.error(f"Failed to create lobby text channel.", event_id)
+            self.logger.error(e, event_id)
+
+        try:
+            self.logger.debug(
+                f"Moving voice channel ({voice_channel.name}) to lobby category ({category.name}).",
+                event_id,
+            )
+            await voice_channel.move(beginning=True, category=category)
+        except Exception as e:
+            self.logger.error(f"Failed to move voice channel.", event_id)
             self.logger.error(e, event_id)
 
         try:
