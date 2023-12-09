@@ -3,6 +3,7 @@
 
 import os
 import logging
+
 # from systemd.journal import JournalHandler
 
 from discord.ext import commands
@@ -21,7 +22,7 @@ Common = Common()
 class debug_logger:
     # Logger meant for debugging at the terminal.
 
-    LOG_LEVEL = os.getenv('LOG_LEVEL') or "info"
+    LOG_LEVEL = os.getenv("LOG_LEVEL") or "info"
 
     match LOG_LEVEL:
         case "debug":
@@ -35,9 +36,6 @@ class debug_logger:
         case "critical":
             level = logging.CRITICAL
 
-
-
-
     def handle(self, record: logging.LogRecord):
         self.emit(record)
 
@@ -48,7 +46,7 @@ class debug_logger:
         # https://docs.python.org/3/library/logging.html#logrecord-objects
         # Extracts the log message for terminal printing
         # Formatting: filename, line_number, message
-        msg = f"{record.pathname}, {record.lineno}, \"{record.msg}\", {record.args}"
+        msg = f'{record.pathname}, {record.lineno}, "{record.msg}", {record.args}'
         print(msg)
 
 
@@ -58,11 +56,11 @@ logger.setLevel(logging.DEBUG)
 logger.addHandler(debug_logger())
 
 # Setup bot variables
-PREFIX = '/'
-APP_DIR = os.getenv('PWD')  # Given by Docker
-TOKEN = os.getenv('DISCORD_TOKEN')
-CONTROLLER_GUILD_ID = int(os.getenv('CONTROLLER_GUILD_ID') or 1154917737827684372)
-CONTROLLER_CHANNEL_ID = int(os.getenv('CONTROLLER_CHANNEL_ID') or 1155579990373568522)
+PREFIX = "/"
+APP_DIR = os.getenv("PWD")  # Given by Docker
+TOKEN = os.getenv("DISCORD_TOKEN")
+CONTROLLER_GUILD_ID = int(os.getenv("CONTROLLER_GUILD_ID") or 1154917737827684372)
+CONTROLLER_CHANNEL_ID = int(os.getenv("CONTROLLER_CHANNEL_ID") or 1155579990373568522)
 
 # Setup intents
 # https://discord.readthedocs.io/en/latest/api.html?highlight=intents#discord.Intents.default
@@ -70,16 +68,15 @@ intents = discord.Intents.default()
 intents.message_content = True
 intents.members = True
 
-BOT = commands.Bot(command_prefix=PREFIX,
-                   intents=intents, case_insensitive=True)
+BOT = commands.Bot(command_prefix=PREFIX, intents=intents, case_insensitive=True)
 
 
 @BOT.event
 async def on_ready():
     """Produces log for when the bot is ready for action"""
-    logger.info(f'{BOT.user.name} has connected to Discord!')
+    logger.info(f"{BOT.user.name} has connected to Discord!")
 
-    admin_logger = BOT.get_cog('admin_logging')
+    admin_logger = BOT.get_cog("admin_logging")
 
     await admin_logger.log(f"{BOT.user.name} has reconnected!")
 
@@ -88,22 +85,32 @@ async def on_ready():
 
 
 @BOT.tree.error
-async def on_error(interaction: discord.Interaction=None, error: discord.app_commands.AppCommandError=None):
+async def on_error(
+    interaction: discord.Interaction = None,
+    error: discord.app_commands.AppCommandError = None,
+):
     try:
         if isinstance(error, discord.app_commands.errors.CommandOnCooldown):
-            logger.warning(f'CommandOnCooldown: {error}')
-            await interaction.response.send_message(f"Command is on cooldown. Try again in {error.retry_after:.0f} seconds.")
+            logger.warning(f"CommandOnCooldown: {error}")
+            await interaction.response.send_message(
+                f"Command is on cooldown. Try again in {error.retry_after:.0f} seconds."
+            )
         elif isinstance(error, Common.UserError):
-            logger.warning(f'UserError: {error}')
+            logger.warning(f"UserError: {error}")
             await interaction.response.send_message(error.message)
         else:
-            logger.warning(f'Unknown error: {error}')
-            await interaction.response.send_message("There was an error while handling your command.")
+            logger.warning(f"Unknown error: {error}")
+            await interaction.response.send_message(
+                "There was an error while handling your command."
+            )
     except Exception as e:
-        logger.warn('Failed to log on_error exception')
+        logger.warn("Failed to log on_error exception")
         logger.warn(e)
         admin_logger = BOT.get_cog("admin_logging")
-        await admin_logger.log(f"Failed to log during AppCommandError exception\n\nSource Interaction: \n{interaction}\n\nSource Error: {error}\n\nLogger exception: {e}")
+        await admin_logger.log(
+            f"Failed to log during AppCommandError exception\n\nSource Interaction: \n{interaction}\n\nSource Error: {error}\n\nLogger exception: {e}"
+        )
+
 
 async def start_bot():
     """
@@ -114,5 +121,6 @@ async def start_bot():
     await lobby_commands.setup(BOT, logger, APP_DIR)
     await lobby_handler.setup(BOT, logger)
     await BOT.start(TOKEN)
+
 
 asyncio.run(start_bot())
