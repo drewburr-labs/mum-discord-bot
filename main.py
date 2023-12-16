@@ -4,8 +4,6 @@
 import os
 import logging
 
-# from systemd.journal import JournalHandler
-
 from discord.ext import commands
 import discord
 import asyncio
@@ -18,42 +16,25 @@ import src.admin_events as admin_events
 
 Common = Common()
 
+match os.getenv("LOG_LEVEL") or "info":
+    case "debug":
+        level = logging.DEBUG
+    case "info":
+        level = logging.INFO
+    case "warning":
+        level = logging.WARNING
+    case "error":
+        level = logging.ERROR
+    case "critical":
+        level = logging.CRITICAL
 
-class debug_logger:
-    # Logger meant for debugging at the terminal.
+logging.basicConfig(
+    format="%(asctime)s %(levelname)-8s %(message)s",
+    level=level,
+    datefmt="%Y-%m-%d %H:%M:%S",
+)
 
-    LOG_LEVEL = os.getenv("LOG_LEVEL") or "info"
-
-    match LOG_LEVEL:
-        case "debug":
-            level = logging.DEBUG
-        case "info":
-            level = logging.INFO
-        case "warning":
-            level = logging.WARNING
-        case "error":
-            level = logging.ERROR
-        case "critical":
-            level = logging.CRITICAL
-
-    def handle(self, record: logging.LogRecord):
-        self.emit(record)
-
-    def handleError(self, record: logging.LogRecord):
-        self.emit(record)
-
-    def emit(self, record: logging.LogRecord):
-        # https://docs.python.org/3/library/logging.html#logrecord-objects
-        # Extracts the log message for terminal printing
-        # Formatting: filename, line_number, message
-        msg = f'{record.pathname}, {record.lineno}, "{record.msg}", {record.args}'
-        print(msg)
-
-
-# Setup logger object
 logger = logging.getLogger(__name__)
-logger.setLevel(logging.DEBUG)
-logger.addHandler(debug_logger())
 
 # Setup bot variables
 PREFIX = "/"
