@@ -35,7 +35,7 @@ class admin_logging(commands.Cog):
         except Exception as e:
             self.logger.error("Failed to admin log message")
             self.logger.error(f"Guild: {guild}, Channel: {channel}")
-            self.logger.error(e)
+            self.logger.error(f"Exception: {e}")
             self.logger.error(msg, embed)
 
         if not (msg or embed):

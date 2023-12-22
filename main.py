@@ -86,7 +86,7 @@ async def on_error(
             )
     except Exception as e:
         logger.warn("Failed to log on_error exception")
-        logger.warn(e)
+        logger.warn(f"Exception: {e}")
         admin_logger = BOT.get_cog("admin_logging")
         await admin_logger.log(
             f"Failed to log during AppCommandError exception\n\nSource Interaction: \n{interaction}\n\nSource Error: {error}\n\nLogger exception: {e}"
