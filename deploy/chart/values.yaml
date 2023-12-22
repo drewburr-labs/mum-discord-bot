@@ -6,4 +6,4 @@ mum:
         optional: false
   env:
     - name: LOG_LEVEL
-      value: debug
+      value: info
