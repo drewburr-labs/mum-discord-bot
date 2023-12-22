@@ -4,3 +4,4 @@ src/__pycache__
 .vscode
 **/*secret*
 deploy/chart/charts
+deploy/chart/Chart.lock
