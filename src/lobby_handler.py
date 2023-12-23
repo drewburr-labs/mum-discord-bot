@@ -15,6 +15,7 @@ class lobby_handler(commands.Cog):
         self.bot = bot
         self.logger = logger
         self.text_channel_name = "text-chat"
+        self.seed_channel_name = "Create New Lobby"
 
     @commands.Cog.listener()
     async def on_voice_state_update(
@@ -32,28 +33,31 @@ class lobby_handler(commands.Cog):
         """
 
         guild = member.guild
-        try:
-            logger_context = {
-                "guild": guild,
-                "member": member,
-                "before_channel": before.channel,
-                "after_channel": after.channel,
-            }
-        except Exception as e:
-            self.logger.error("Failed to initialize lobby member.")
-            self.logger.error(f"Exception: {e}")
+
+        logger_context = {
+            "guild": guild.name,
+            "member": member.name,
+            "before_channel": before.channel.name,
+            "after_channel": after.channel.name,
+        }
+
+        logger_context["before_category"] = (
+            before.channel.category.name if before.channel.category else None
+        )
+        logger_context["after_category"] = (
+            after.channel.category.name if after.channel.category else None
+        )
 
         # Don't do anything if user's channel didn't update
         if before.channel is not after.channel:
             self.logger.debug(f"Member voice state changed. {logger_context}")
 
-            seed_channel = utils.get(guild.voice_channels, name="Create New Lobby")
-
             if after.channel is not None:
-                self.logger.debug("Member joined new voice channel.")
+                seed_channel = after.channel
+                self.logger.debug(f"Member joined new voice channel. {logger_context}")
 
-                if after.channel is seed_channel:
-                    self.logger.info("Member creating new lobby.")
+                if after.channel.name.lower() == self.seed_channel_name.lower():
+                    self.logger.info(f"Member creating new lobby. {logger_context}")
                     try:
                         await self.initialize_lobby(seed_channel, member)
                     except Exception as e:
@@ -61,28 +65,22 @@ class lobby_handler(commands.Cog):
                         self.logger.error(f"Exception: {e}")
 
                 elif Common.is_lobby(after.channel.category):
-                    self.logger.info("Member joined existing lobby.")
+                    self.logger.info(f"Member joined existing lobby. {logger_context}")
                     try:
                         await self.initialize_lobby_member(
                             member, after.channel.category
                         )
                     except Exception as e:
-                        self.logger.error(
-                            "Failed to initialize lobby member."
-                        )
+                        self.logger.error("Failed to initialize lobby member.")
                         self.logger.error(f"Exception: {e}")
 
             if before.channel is not None and Common.is_lobby(before.channel.category):
-                self.logger.info("Member left lobby.")
+                self.logger.info(f"Member left lobby. {logger_context}")
 
                 try:
-                    await self.clear_member_lobby_overwrites(
-                        member, before.channel.category
-                    )
+                    await self.remove_lobby_member(member, before.channel.category)
                 except Exception as e:
-                    self.logger.error(
-                        "Failed to clear member lobby overwrites."
-                    )
+                    self.logger.error("Failed to clear member lobby overwrites.")
                     self.logger.error(f"Exception: {e}")
 
                 try:
@@ -109,15 +107,17 @@ class lobby_handler(commands.Cog):
         voice_channel_name = "voice chat"
         guild = seed_channel.guild
 
-        self.logger.info(f"Creating new lobby ({category_name}) in guild {guild} ({guild.id})")
+        self.logger.info(
+            f"Creating new lobby ({category_name}) in guild {guild} ({guild.id})"
+        )
 
         if seed_channel.category:
-            self.logger.info(f"Cloning channel category ({category_name}).")
+            self.logger.info(f"Cloning seed category. ({category_name})")
             category: discord.CategoryChannel = await seed_channel.category.clone(
                 name=category_name
             )
         else:
-            self.logger.info(f"Creating lobby category ({category_name}).")
+            self.logger.info(f"Creating lobby category. ({category_name})")
             category = await guild.create_category_channel(category_name)
 
         voice_channel_kwargs = {
@@ -130,7 +130,7 @@ class lobby_handler(commands.Cog):
         voice_channel_settings = {
             "nsfw": seed_channel.nsfw,
             "slowmode_delay": seed_channel.slowmode_delay,
-            "rtc_region": seed_channel.rtc_region
+            "rtc_region": seed_channel.rtc_region,
         }
 
         voice_channel_overwrites = seed_channel.overwrites
@@ -138,51 +138,45 @@ class lobby_handler(commands.Cog):
         self.logger.info(f"Lobby voice channel arguments: {voice_channel_kwargs}")
         self.logger.info(f"Lobby voice channel settings: {voice_channel_settings}")
 
-        display_overwrites = {f"{type(target).name} {target.name}":overwrite.pair() for (target, overwrite) in voice_channel_overwrites.items()}
+        display_overwrites = {
+            f"{type(target).name} {target.name}": overwrite.pair()
+            for (target, overwrite) in voice_channel_overwrites.items()
+        }
         self.logger.info(f"Lobby voice channel overwrites: {display_overwrites}")
         voice_channel_kwargs["overwrites"] = voice_channel_overwrites
 
         try:
-            self.logger.info(
-                f"Creating lobby voice channel. ({voice_channel_name})"
-            )
+            self.logger.info(f"Creating lobby voice channel. ({voice_channel_name})")
             voice_channel: discord.VoiceChannel = await category.create_voice_channel(
                 **voice_channel_kwargs
             )
             await voice_channel.edit(**voice_channel_settings)
         except Exception as e:
-            self.logger.error(f"Failed to create lobby voice channel.")
+            self.logger.error(
+                f"Failed to create lobby voice channel. ({category_name})"
+            )
             self.logger.error(f"Exception: {e}")
 
         try:
             self.logger.info(f"Initializing text channel for lobby. ({category_name})")
             await self.initialize_lobby_text_channel(category)
         except Exception as e:
-            self.logger.error(f"Failed to create lobby text channel.")
-            self.logger.error(f"Exception: {e}")
-
-        try:
-            self.logger.info(
-                f"Moving voice channel ({voice_channel.name}) to lobby category ({category.name})."
-            )
-            await voice_channel.move(beginning=True, category=category)
-        except Exception as e:
-            self.logger.error(f"Failed to move voice channel.")
+            self.logger.error(f"Failed to create lobby text channel. ({category_name})")
             self.logger.error(f"Exception: {e}")
 
         try:
             # Triggers 'on_voice_state_update'
-            self.logger.info(f"Moving member to lobby voice channel.")
+            self.logger.info(
+                f"Moving {member.name} to lobby voice channel. ({category_name})"
+            )
             await member.edit(voice_channel=voice_channel)
         except Exception as e:
             self.logger.error(
-                f"Failed to move member to lobby voice channel."
+                f"Failed to move {member.name} to lobby voice channel. ({category_name})"
             )
             self.logger.error(f"Exception: {e}")
 
-    async def initialize_lobby_text_channel(
-        self, category: discord.CategoryChannel
-    ):
+    async def initialize_lobby_text_channel(self, category: discord.CategoryChannel):
         """
         Creates the text channel for a particular lobby.
         Text channel is hidden from users by revoking default read access.
@@ -205,13 +199,13 @@ class lobby_handler(commands.Cog):
             ),  # Ensure bot keeps permissions
         }
 
-        self.logger.info("Creating lobby text channel.")
+        self.logger.info(f"Creating lobby text channel. ({category.name})")
         # Setup text channel
         text_channel = await category.create_text_channel(
             self.text_channel_name, topic=text_channel_topic, overwrites=overwrites
         )
 
-        self.logger.info("Sending lobby welcome message.")
+        self.logger.info(f"Sending lobby welcome message. ({category.name})")
         await self.send_lobby_welcome_message(text_channel)
 
         return text_channel
@@ -226,10 +220,14 @@ class lobby_handler(commands.Cog):
 
         # Grant read access to text channels
         for channel in category.text_channels:
-            self.logger.info("Granting member read access to text channel.")
+            self.logger.info(
+                f"Granting member read access to text channel. ({category.name})"
+            )
             await channel.set_permissions(member, read_messages=True)
             if channel.name == self.text_channel_name:
-                self.logger.info("Sending member join notification message.")
+                self.logger.info(
+                    f"Sending member join notification message. ({category.name})"
+                )
                 await channel.send(f"{member.display_name} joined the lobby.")
 
     # @BOT.command(name="test")
@@ -279,7 +277,7 @@ class lobby_handler(commands.Cog):
                 self.logger.info(f"Deleting {channel.type} channel ({channel})")
                 await channel.delete()
             except Exception as e:
-                self.logger.info("Failed to delete lobby channel")
+                self.logger.info(f"Failed to delete lobby channel. ({category.name})")
                 self.logger.info(f"Exception: {e}")
                 raise e
 
@@ -287,7 +285,7 @@ class lobby_handler(commands.Cog):
         self.logger.info(f"Deleting category. {category.name}")
         await category.delete()
 
-    async def clear_member_lobby_overwrites(
+    async def remove_lobby_member(
         self, member: discord.Member, category: discord.CategoryChannel
     ):
         """
@@ -305,12 +303,12 @@ class lobby_handler(commands.Cog):
                 await channel.set_permissions(member, overwrite=overwrite)
                 if channel.name == self.text_channel_name:
                     self.logger.info(
-                        f"Sending member leave notification message. ({member.name})"
+                        f"Sending member leave notification message for {member.name} ({category.name})"
                     )
                     await channel.send(f"{member.display_name} left the lobby.")
             except Exception as e:
                 self.logger.error(
-                    f"Failed to remove channel permissions. ({channel.name})"
+                    f"Failed to remove permissions on channel {channel.name} ({category.name})"
                 )
                 self.logger.error(f"Exception: {e}")
 
