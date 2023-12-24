@@ -35,18 +35,23 @@ class lobby_handler(commands.Cog):
         guild = member.guild
 
         logger_context = {
+            "before_category": '',
+            "before_channel": '',
+            "after_category": '',
+            "after_channel": '',
             "guild": guild.name,
             "member": member.name,
-            "before_channel": before.channel.name,
-            "after_channel": after.channel.name,
         }
 
-        logger_context["before_category"] = (
-            before.channel.category.name if before.channel.category else None
-        )
-        logger_context["after_category"] = (
-            after.channel.category.name if after.channel.category else None
-        )
+        if before.channel:
+            logger_context["before_channel"] = before.channel.name
+            if before.channel.category:
+                logger_context["before_category"] = before.channel.category.name
+
+        if after.channel:
+            logger_context["after_channel"] = after.channel.name
+            if after.channel.category:
+                logger_context["after_category"] = after.channel.category.name
 
         # Don't do anything if user's channel didn't update
         if before.channel is not after.channel:
