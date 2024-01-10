@@ -199,17 +199,19 @@ class lobby_handler(commands.Cog):
         bot_member = utils.get(guild.members, id=self.bot.user.id)
         bot_role = bot_member.roles[-1]
 
-        overwrites = {
-            guild.default_role: discord.PermissionOverwrite(
-                read_messages=False
-            ),  # Set global deny
-            bot_role: discord.PermissionOverwrite(
-                read_messages=True
-            ),  # Ensure bot keeps permissions
-        }
+        overwrites = {}
+
+        # Default global deny
+        overwrites[guild.default_role] = discord.PermissionOverwrite(read_messages=False)
+
+        for target, overwrite in category.overwrites.items():
+            if overwrite.read_messages:
+                overwrites[target] = discord.PermissionOverwrite(read_messages=True)
+
+        # Ensure bot keeps read permissions
+        overwrites[bot_role] = discord.PermissionOverwrite(read_messages=True)
 
         self.logger.info(f"Creating lobby text channel. ({category.name})")
-        # Setup text channel
         text_channel = await category.create_text_channel(
             self.text_channel_name, topic=text_channel_topic, overwrites=overwrites
         )
