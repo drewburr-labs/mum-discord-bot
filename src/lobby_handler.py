@@ -35,10 +35,10 @@ class lobby_handler(commands.Cog):
         guild = member.guild
 
         logger_context = {
-            "before_category": '',
-            "before_channel": '',
-            "after_category": '',
-            "after_channel": '',
+            "before_category": "",
+            "before_channel": "",
+            "after_category": "",
+            "after_channel": "",
             "guild": guild.name,
             "member": member.name,
         }
@@ -76,7 +76,9 @@ class lobby_handler(commands.Cog):
                             member, after.channel.category
                         )
                     except Exception as e:
-                        self.logger.error(f"Failed to initialize lobby member. {logger_context}")
+                        self.logger.error(
+                            f"Failed to initialize lobby member. {logger_context}"
+                        )
                         self.logger.error(f"Exception: {e}")
 
             if before.channel is not None and Common.is_lobby(before.channel.category):
@@ -85,7 +87,9 @@ class lobby_handler(commands.Cog):
                 try:
                     await self.remove_lobby_member(member, before.channel.category)
                 except Exception as e:
-                    self.logger.error(f"Failed to clear member lobby overwrites. {logger_context}")
+                    self.logger.error(
+                        f"Failed to clear member lobby overwrites. {logger_context}"
+                    )
                     self.logger.error(f"Exception: {e}")
 
                 try:
